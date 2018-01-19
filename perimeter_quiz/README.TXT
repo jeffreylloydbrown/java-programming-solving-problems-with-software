@@ -1,0 +1,1 @@
+Week 1 homework assignment.  See Assignment.docx.
