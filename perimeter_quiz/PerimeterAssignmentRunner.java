@@ -2,9 +2,9 @@ import edu.duke.*;
 import java.io.File;
 
 public class PerimeterAssignmentRunner {
-    /** getNumPoints() returns an integer that is the number of points in Shape `s`.
-     *  @param s:   the Shape we are counting points in
-     *  @return:    number of points in Shape `s`
+    /** Count the number of points in Shape `s`.
+     *  @param s:   a Shape to examine
+     *  @return     the number of points in Shape `s`.
      */
     public int getNumPoints (Shape s) {
         // Initalize a count and just loop over the points, adding 1 to the counter
@@ -16,6 +16,10 @@ public class PerimeterAssignmentRunner {
         return points;
     }
     
+    /** Calculate the length of the perimeter of Shape `s`.
+     *  @param s:   a Shape to examine
+     *  @return     the length of the perimeter of Shape `s`.
+     */
     public double getPerimeter (Shape s) {
         // Start with totalPerim = 0
         double totalPerim = 0;
@@ -34,9 +38,9 @@ public class PerimeterAssignmentRunner {
         return totalPerim;
     }
 
-    /** getAverageLength() returns the average length of all sides in Shape `s`.
+    /** Calculate the average length of all sides in Shape `s`.
      *  @param s:   a Shape to examine
-     *  @return:    the average length of all sides in the shape
+     *  @return     the average length of all sides in Shape `s`.
      */
     public double getAverageLength(Shape s) {
         // Average length is just the total length divided by the number of sides. 
@@ -52,9 +56,9 @@ public class PerimeterAssignmentRunner {
         return getPerimeter(s)/getNumPoints(s);
     }
 
-    /** getLargestSide() returns the length of the longest side in Shape `s`.
-     *  @param s:  the Shape to examine
-     *  @return:   the length of the longest side in Shape `s`.
+    /** Calculate the length of the longest side in Shape `s`.
+     *  @param s:  a Shape to examine
+     *  @return     the length of the longest side in Shape `s`.
      */
     public double getLargestSide(Shape s) {
         // Start with longestSide = 0
@@ -76,6 +80,10 @@ public class PerimeterAssignmentRunner {
         return longestSide;
     }
 
+    /** Determine the maximum X coordinate found in Shape `s`.
+     *  @param s:  a Shape to examine
+     *  @return     the maximum X coordinate found in Shape `s`.
+     */
     public double getLargestX(Shape s) {
         // Start with largestX = minimum negative value Java supports.
         double largestX = - Double.MAX_VALUE;
@@ -92,6 +100,12 @@ public class PerimeterAssignmentRunner {
         return largestX;
     }
 
+    /** Examines the shapes defined in files the user selects, and determines
+     *  the largest perimeter in those shapes.
+     *  
+     *  @return the largest perimeter of the shapes defined in 
+     *  multiple files the user selects.
+     */
     public double getLargestPerimeterMultipleFiles() {
         DirectoryResource dr = new DirectoryResource();
         double largestPerimeter = 0.0;
@@ -106,6 +120,12 @@ public class PerimeterAssignmentRunner {
         return largestPerimeter;
     }
 
+    /** Examines the shapes defined in files the user selects, and determines
+     *  the name of the file holding the shape with the largest perimeter.
+     *  
+     *  @return the name of the file containing the shape with
+     *  the largest perimeter in a group of multiple files the user selects.
+     */
     public String getFileWithLargestPerimeter() {
         // This code is very similar to getLargestPerimeterMultipleFiles().
         // We do all that same work.  Additionally, whenever we remember
@@ -126,6 +146,8 @@ public class PerimeterAssignmentRunner {
         return largestFilename;
     }
     
+    /** Simple test driver for a single shape.
+     */
     public void testPerimeter() {
         FileResource fr = new FileResource();
         Shape s = new Shape(fr);
@@ -141,15 +163,17 @@ public class PerimeterAssignmentRunner {
         System.out.println("largest X coord = " + getLargestX(s));
     }
 
+    /** Test driver for calling getLargestPerimeterMultipleFiles() */
     public void testPerimeterMultipleFiles() {
         System.out.println("largest perimeter = " + getLargestPerimeterMultipleFiles());
     }
 
+    /** Test driver for calling getFileWithLargestPerimeter() */
     public void testFileWithLargestPerimeter() {
         System.out.println("file with largest perimeter = " + getFileWithLargestPerimeter());
     }
 
-    // This method creates a triangle that you can use to test your other methods
+    /** This method creates a triangle that you can use to test your other methods */
     public void triangle(){
         Shape triangle = new Shape();
         triangle.addPoint(new Point(0,0));
@@ -162,7 +186,7 @@ public class PerimeterAssignmentRunner {
         System.out.println("perimeter = "+peri);
     }
 
-    // This method prints names of all files in a chosen folder that you can use to test your other methods
+    /** This method prints names of all files in a chosen folder that you can use to test your other methods */
     public void printFileNames() {
         DirectoryResource dr = new DirectoryResource();
         for (File f : dr.selectedFiles()) {
@@ -170,6 +194,7 @@ public class PerimeterAssignmentRunner {
         }
     }
 
+    /** Runs testPerimeter() to do initial testing */
     public static void main (String[] args) {
         PerimeterAssignmentRunner pr = new PerimeterAssignmentRunner();
         pr.testPerimeter();
