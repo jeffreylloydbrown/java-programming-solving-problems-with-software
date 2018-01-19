@@ -34,9 +34,22 @@ public class PerimeterAssignmentRunner {
         return totalPerim;
     }
 
+    /** getAverageLength() returns the average length of all sides in Shape `s`.
+     *  @param s:   a Shape to examine
+     *  @return:    the average length of all sides in the shape
+     */
     public double getAverageLength(Shape s) {
-        // Put code here
-        return 0.0;
+        // Average length is just the total length divided by the number of sides. 
+        // Total length is just the perimeter.  Number of sides is the same as the
+        // number of points.
+        
+        // The more maintainable way to write this is to use getPerimeter() and
+        // getNumPoints(), appropriately adjusted.  If we really needed better 
+        // performance, we would do this work with a single loop here as using those
+        // methods will process the shape twice instead of once.  For non-huge shapes,
+        // this isn't worth the difference.
+        
+        return getPerimeter(s)/getNumPoints(s);
     }
 
     public double getLargestSide(Shape s) {
@@ -67,6 +80,7 @@ public class PerimeterAssignmentRunner {
         System.out.println("number of points = " + points);
         double length = getPerimeter(s);
         System.out.println("perimeter = " + length);
+        System.out.println("average side length = " + getAverageLength(s));
     }
 
     public void testPerimeterMultipleFiles() {
