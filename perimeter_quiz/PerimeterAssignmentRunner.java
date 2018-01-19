@@ -6,6 +6,10 @@ public class PerimeterAssignmentRunner {
         // Put code here
         return 0;
     }
+    
+    public double getPerimeter (Shape s) {
+        return 0.0;
+    }
 
     public double getAverageLength(Shape s) {
         // Put code here
@@ -31,6 +35,9 @@ public class PerimeterAssignmentRunner {
         // Put code here
         File temp = null;    // replace this code
         return temp.getName();
+    }
+    
+    public void testPerimeter() {
     }
 
     public void testPerimeterMultipleFiles() {
