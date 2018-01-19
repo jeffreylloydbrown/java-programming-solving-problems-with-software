@@ -2,9 +2,18 @@ import edu.duke.*;
 import java.io.File;
 
 public class PerimeterAssignmentRunner {
+    /** getNumPoints() returns an integer that is the number of points in Shape `s`.
+     *  @param s:   the Shape we are counting points in
+     *  @return:    number of points in Shape `s`
+     */
     public int getNumPoints (Shape s) {
-        // Put code here
-        return 0;
+        // Initalize a count and just loop over the points, adding 1 to the counter
+        // on each loop.  We don't do anything with the actual points.
+        int points = 0;
+        for (Point p : s.getPoints()) {
+            points = points + 1;
+        }
+        return points;
     }
     
     public double getPerimeter (Shape s) {
@@ -54,6 +63,8 @@ public class PerimeterAssignmentRunner {
     public void testPerimeter() {
         FileResource fr = new FileResource();
         Shape s = new Shape(fr);
+        int points = getNumPoints(s);
+        System.out.println("number of points = " + points);
         double length = getPerimeter(s);
         System.out.println("perimeter = " + length);
     }
