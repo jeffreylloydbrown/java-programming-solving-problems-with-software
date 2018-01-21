@@ -13,31 +13,30 @@ public class Part4 {
      * @param url   The URL to search for links to YouTube
      */
     public void findYouTubeLinks (String url) {
-        URLResource ur = new URLResource(url);
-        for (String word : ur.words()) {
-            String lower = word.toLowerCase();
-            int youtube = lower.indexOf("youtube.com");
-            if (youtube != -1) {
-                int leftQuote = word.lastIndexOf("\"", youtube);
-                int rightQuote = word.indexOf("\"", youtube);
-                if (leftQuote != -1 && rightQuote != -1) {
-                    System.out.println(word.substring(leftQuote+1, rightQuote));
+        if (url.startsWith("http")) {
+            URLResource ur = new URLResource(url);
+            for (String word : ur.words()) {
+                String lower = word.toLowerCase();
+                int youtube = lower.indexOf("youtube.com");
+                if (youtube != -1) {
+                    int leftQuote = word.lastIndexOf("\"", youtube);
+                    int rightQuote = word.indexOf("\"", youtube);
+                    if (leftQuote != -1 && rightQuote != -1) {
+                        System.out.println(word.substring(leftQuote+1, rightQuote));
+                    }
                 }
             }
+        } else {
+            System.out.println("'"+url+"' isn't a valid url.");
         }
     }
-    
+
     /** Test driver for findYouTubeLinks */
     void testing() {
         System.out.println("Test 1: a page at Duke University");
         findYouTubeLinks("http://www.dukelearntoprogram.com/course2/data/manylinks.html");
-        System.out.println("Test 2: an empty URL is an exception");
-        try {
-            findYouTubeLinks("");
-            System.out.println("FAIL:  no exception when one expected");
-        } catch (Exception e) {
-            System.out.println("PASS:  caught Exception "+e.getMessage());
-        }
+        System.out.println("Test 2: an empty URL isn't valid");
+        findYouTubeLinks("");
     }
 
 }
