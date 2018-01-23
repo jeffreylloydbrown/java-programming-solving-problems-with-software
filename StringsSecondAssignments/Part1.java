@@ -26,7 +26,8 @@ public class Part1 {
     public int findStopCodon (String dna, int startIndex, String stopCodon) {
         // Check parameters.  If any are not valid, return "not found"
         // (which is dna.length()).
-        if (dna.isEmpty() || stopCodon.isEmpty() || startIndex < 0 || startIndex >= dna.length()) {
+        if (dna.isEmpty() || stopCodon.isEmpty() || 
+            startIndex < 0 || startIndex >= dna.length()) {
             return dna.length();
         }
         
@@ -37,7 +38,7 @@ public class Part1 {
         while (currIndex != -1) {
             if ((currIndex - startIndex) % 3 == 0) { // found
                 return currIndex;
-            } else {
+            } else {  // not found
                 currIndex = dna.indexOf(stopCodon, currIndex+1);
             }
         }
@@ -79,9 +80,31 @@ public class Part1 {
      * @returns a valid gene sequence or "" if `dna` does not contain a gene.
      */
     public String findGene (String dna) {
+        if (dna.isEmpty()) return "";
+
+        // Find the start of the next gene.  If none, return "".
+        int startIndex = dna.indexOf("ATG");
+        if (startIndex < 0) return "";
+
+        // Find each of the next possible stop codons.            
+        int taaIndex = findStopCodon(dna, startIndex, "TAA");
+        int tagIndex = findStopCodon(dna, startIndex, "TAG");
+        int tgaIndex = findStopCodon(dna, startIndex, "TGA");
+
+        // Which of the 3 is closest to startIndex?  This is where
+        // returning the dna length for "not found" helps:  it will
+        // automatically be larger than any real codon index.
+        int minIndex = taaIndex;
+        if (tagIndex < minIndex) minIndex = tagIndex;
+        if (tgaIndex < minIndex) minIndex = tgaIndex;
         
-        // Not found, return "".
-        return "";
+        // Return the gene between startIndex and minIndex+3.  But if
+        // minIndex is dna.length(), there was no gene found so return "";
+        if (minIndex < dna.length()) {
+            return dna.substring(startIndex, minIndex+3);
+        } else {
+            return "";
+        }
     }
     
     private void testFG(String desc, String dna, String expected) {
@@ -92,11 +115,18 @@ public class Part1 {
             System.out.println("FAIL: "+desc+": dna='"+dna+"' expected '"+expected+"', got '"+gene+"'");
         }
     }
+    
     /** Test driver for findGene() */
     public void testFindGene() {
         testFG("smallest gene", "ATGTAA", "ATGTAA");
         testFG("2 TAA, one not in right place", "ATGCTAACCTAA", "ATGCTAACCTAA");
-        testFG("multiple stop codons TGA", "ATGTAGTGATAA", "ATGTAG");
+        testFG("multiple stop codons TAG first", "ATGTAGTGATAA", "ATGTAG");
+        testFG("multiple stop codons TGA valid", "ATGCTAGCCTGATGA", "ATGCTAGCCTGA");
+        testFG("multiple stop codons TAA first", "ATGCCCTAATAGTGA", "ATGCCCTAA");
+        testFG("multiple stop codons TGA first", "ATGCCCTGATAGTAA", "ATGCCCTGA");
+        testFG("multiple stop codons TAG first", "ATGCCCTAGTAATGA", "ATGCCCTAG");
+        testFG("empty dna", "", "");
+        testFG("no gene", "CCCTGA", "");
         System.out.println("tests completed");
     }
     
@@ -105,5 +135,31 @@ public class Part1 {
      * @param dna   the DNA strand to search
      */
     public void printAllGenes (String dna) {
+        String gene;
+        System.out.println("dna: "+dna);
+        System.out.println("genes:");
+        while (true) {
+            gene = findGene(dna);
+            if (gene.isEmpty()) { // all done
+                break;
+            } else {
+                // Found a gene.  Print it.  Then update dna
+                // to be the substring AFTER the end of the
+                // located gene.
+                System.out.println(gene);
+                dna = dna.substring(dna.indexOf(gene)+gene.length(), dna.length());
+            }
+        }
+        System.out.println("done");
+    }
+    
+    /** Test driver for printAllGenes */
+    public void testPrintAllGenes() {
+        printAllGenes("ATGTAAGATGCCCTAGT");
+        System.out.println("should see 2 genes, 'ATGTAA' and 'ATGCCCTAG'");
+        printAllGenes("ABCDE");
+        System.out.println("should see no genes");
+        printAllGenes("");
+        System.out.println("should see no genes because dna was empty");
     }
 }
