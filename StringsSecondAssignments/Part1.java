@@ -83,7 +83,7 @@ public class Part1 {
         if (dna.isEmpty()) return "";
 
         // Find the start of the next gene.  If none, return "".
-        int startIndex = dna.indexOf("ATG");
+        int startIndex = dna.indexOf(START_CODON);
         if (startIndex < 0) return "";
 
         // Find each of the next possible stop codons.            
