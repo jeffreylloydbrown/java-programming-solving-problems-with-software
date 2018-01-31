@@ -1,3 +1,4 @@
+import edu.duke.*;
 
 /**
  * Add a gene processor to our tools.  It
@@ -11,73 +12,96 @@
  * @version 1
  */
 public class Part3 {
-    /** Return the ratio of Cs and Gs in `dna` as a fraction
-     *  of the entire strand of DNA.
-     *  
-     *  For example, with "ATGCCATAG", the ratio is 4/9 or .444
-     *  
-     *  @param dna      the DNA strand to process
-     *  @returns the ratio of C & G nucleotides in `dna`
+    private String INDENT = "  ";
+    
+    /** Given a StorageResource `sr` of genes, run the following analyses:
+     *  - print all the genes longer than 9 characters and their count
+     *  - print all the genes with a high cgRatio (> 0.35) and their count
+     *  - print the length of the longest gene
+     * 
+     * @param sr    the collection of genes to analyze.
+     * @param minLength     print genes longer than this length
      */
-    public double cgRatio (String dna) {
-        int cgCount = 0;
-        
-        // Check parameter to avoid divide by zero.
-        if (dna.isEmpty()) return 0.0;
-        
-        // Convert string to a collection of characters, then loop 
-        // over it.  
-        for (Character n : dna.toCharArray()) {
-            n = Character.toUpperCase(n);
-            if (n == 'C' || n == 'G') {
-                cgCount = cgCount + 1;
+    public void processGenes (StorageResource sr, int minLength) {
+        genesLongerThan(sr, minLength);
+        genesHighCGRatio(sr);
+        genesLongestLength(sr);
+    }
+    
+    // Helper for processGenes(), prints all genes with length > `minLength`, and their count.
+    private void genesLongerThan (StorageResource sr, int minLength) {
+        int count = 0;
+        System.out.println("Genes longer than "+minLength+" nucleotides:");
+        for (String gene : sr.data()) {
+            if (gene.length() > minLength) {
+                count = count + 1;
+                System.out.println(INDENT+gene);
             }
         }
-        return (double) cgCount/dna.length();
+        System.out.println(INDENT+"Total = "+count);
     }
     
-    /** Test driver for cgRatio */
-    public void testCGRatio() {
-        double ratio = cgRatio("ATGCCATAG");
-        if (ratio <= 0.44444 || ratio >= 0.44445)
-            System.out.println("expected 0.44444444, got "+ratio);
-        ratio = cgRatio("ABDE");
-        if (ratio != 0.0) System.out.println("expected 0.0, got "+ratio);
-        ratio = cgRatio("");
-        if (ratio != 0.0) System.out.println("expected 0.0, got "+ratio);
-        System.out.println("tests finished");
-    }
-    
-    /** Determine how many times the codon "CTG" appears in a DNA strand.
-     *  
-     *  @param dna  the DNA strand to search
-     *  @returns the count of "CTG" codons.  Returns 0 if no occurrences
-     *  or if `dna` is empty.
-     */
-    public int countCTG (String dna) {
-        // Check parameters.  No dna, no count.
-        if (dna.isEmpty()) return 0;
-        
-        // OK, count occurrences.
+    // Helper for processGenes(), prints all genes with a high CG ratio, and their count.
+    private void genesHighCGRatio (StorageResource sr) {
         int count = 0;
-        String CTG = "CTG";
-        int idx = dna.indexOf(CTG, 0);
-        while (idx >= 0) {
-            count = count + 1;
-            // Careful: advance by the length of the codon to avoid overlap
-            idx = dna.indexOf(CTG, idx+CTG.length());
+        Part2 part2 = new Part2(); // to use code there
+        System.out.println("Genes with CG ratio > 0.35:");
+        for (String gene : sr.data()) {
+            if (part2.cgRatio(gene) > 0.35) {
+                count = count + 1;
+                System.out.println(INDENT+gene);
+            }
         }
-        return count;
+        System.out.println(INDENT+"Total = "+count);
     }
     
-    /** Test driver for countCTG() */
-    public void testCountCTG() {
-        int count;
-        count = countCTG("ATGCTGCTGTAACTG");
-        if (count != 3) System.out.println("case 1 failed, expected 3 got "+count);
-        count = countCTG("ATGTAA");
-        if (count != 0) System.out.println("case 2 failed, expected 0 got "+count);
-        count = countCTG("");
-        System.out.println("tests finished");
+    // Helper for processGenes(), prints the length of the longest gene.
+    private void genesLongestLength (StorageResource sr) {
+        int longest = 0;  // no gene will be less than zero length
+        
+        for (String gene : sr.data()) {
+            int len = gene.length();
+            if (len > longest) longest = len;
+        }
+        System.out.println("Longest gene is "+longest+" nucleotides.");
     }
+    
+    /** Test driver for processGenes(). */
+    public void testProcessGenes () {
+        Part1 part1 = new Part1();  // to use getAllGenes()
+        
+        System.out.println("Test 1:  empty dna, so no genes found and counts are zero.");
+        processGenes(part1.getAllGenes(""), 9);
+        System.out.println("");
+        
+        System.out.println("Test 2:  dna with no genes, so no genes found and counts are zero.");
+        processGenes(part1.getAllGenes("CCCCCCCCCCCCC"), 9);
+        System.out.println("");
+        
+        System.out.println("Test 3:  dna with 1 gene of 6, low CG, counts zero but longest 6.");
+        processGenes(part1.getAllGenes("ATGTAA"), 9);
+        System.out.println("");
+        
+        System.out.println("Test 4:  dna with gene length 9, high CG, so 0 longer than 9, 1 high CG, longest 9.");
+        processGenes(part1.getAllGenes("ATGCCCTAA"), 9);
+        System.out.println("");
+        
+        System.out.println("Test 5:  2 genes, 1 length 6 1 length 12, low CG, so 1 longer than 9, 0 high CG, longest 12.");
+        processGenes(part1.getAllGenes("ATGTAAbATGTTTCCCTAA"), 9);
+        System.out.println("");
+        
+        System.out.println("Test 6:  2 genes length 12 & 15, 1 low CG 1 high.  2 longer than 9, 1 high CG, longest 15.");
+        processGenes(part1.getAllGenes("ATGATAATATAAbATGCCCCCCCCCTAA"), 9);
+        System.out.println("");
+        
+        System.out.println("dna downloaded from Duke, no idea what correct answers are.");
+        //FileResource fr = new FileResource("dna/brca1line.fa");
+        //FileResource fr = new FileResource("dna/jeff.fa");
+        FileResource fr = new FileResource();   // go pick the file.
+        String dna = fr.asString().toUpperCase();
+        System.out.println("dna length = "+dna.length());
+        processGenes(part1.getAllGenes(dna), 6);
+        System.out.println("");        
+    }
+    
 }  // class Part3
