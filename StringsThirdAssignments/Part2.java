@@ -28,7 +28,7 @@ public class Part2 {
                 cgCount = cgCount + 1;
             }
         }
-        return (double) cgCount/dna.length();
+        return ((double) cgCount)/dna.length();
     }
     
     /** Test driver for cgRatio */
