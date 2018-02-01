@@ -94,13 +94,14 @@ public class Part3 {
         processGenes(part1.getAllGenes("ATGATAATATAAbATGCCCCCCCCCTAA"), 9);
         System.out.println("");
         
-        System.out.println("dna downloaded from Duke, no idea what correct answers are.");
-        //FileResource fr = new FileResource("dna/brca1line.fa");
+        // Passed quiz with 100%, question for this file showed 1 gene longer than 60 and 1 high CG.
+        System.out.println("dna downloaded from Duke, 1 gene over 60 and it has high CG, so both counts are 1.");
+        FileResource fr = new FileResource("dna/brca1line.fa");
         //FileResource fr = new FileResource("dna/jeff.fa");
-        FileResource fr = new FileResource();   // go pick the file.
+        //FileResource fr = new FileResource();   // go pick the file.
         String dna = fr.asString().toUpperCase();
         System.out.println("dna length = "+dna.length());
-        processGenes(part1.getAllGenes(dna), 6);
+        processGenes(part1.getAllGenes(dna), 60);
         System.out.println("");        
     }
     
