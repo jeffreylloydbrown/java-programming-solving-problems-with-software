@@ -32,6 +32,12 @@ public class ParseExportData {
         return "NOT FOUND";
     }
     
+    /** Print the name of all countries that export `exportItem1` and `exportItem2`.
+     * 
+     *  @param parser   represents the CSV data
+     *  @param exportItem1  the first item to search for
+     *  @param exportItem2  the second item to search for
+     */
     public void listExportersTwoProducts (CSVParser parser, String exportItem1, String exportItem2) {
         for (CSVRecord record : parser) {
             String exports = record.get("Exports");
@@ -40,6 +46,26 @@ public class ParseExportData {
                 System.out.println(record.get("Country"));
             }
         }
+    }
+    
+    /** Count how many countries export `exportItem` in the data represented by `parser`.
+     * 
+     *  @param parser   represents the data to search
+     *  @param exportItem  the export item to search for
+     *  @returns the count of countries that export `exportItem`.  Returns zero if 
+     *  `exportItem` isn't found or is the empty string.
+     */
+    public int numberOfExporters (CSVParser parser, String exportItem) {
+        int count = 0;
+        if (! exportItem.isEmpty()) {
+            for (CSVRecord record : parser) {
+                String exports = record.get("Exports");
+                if (exports.contains(exportItem)) {
+                    count = count + 1;
+                }
+            }
+        }
+        return count;
     }
     
     private void step2(CSVParser parser, String country, String expected) {
@@ -55,9 +81,16 @@ public class ParseExportData {
         System.out.println("");
     }
     
+    private void step4 (CSVParser parser, String exportItem, int expected) {
+        int count = numberOfExporters(parser, exportItem);
+        if (count != expected)
+            System.out.println(exportItem + "-- expected count = "+expected+", got "+count);
+    }
+    
     /** Test driver for ParseExportData */
     public void tester() {
-        // Step 1.  Pick a file and get a CSV parser for it.
+        // Step 1.  Pick a file.  We have to get a CSV parser for each test call, so
+        // not putting it in a variable.
         FileResource fr = new FileResource();
         
         // Step 2.  Look up info on 1 particular country.
@@ -72,6 +105,10 @@ public class ParseExportData {
         step3(fr.getCSVParser(), "gold", "", "Should be no countries");
         step3(fr.getCSVParser(), "gold", "diamonds", "Should be Namibia, South Africa");
         
+        // Step 4.  Count the number of countries that export a specific item.
+        step4(fr.getCSVParser(), "", 0);
+        step4(fr.getCSVParser(), "junk food", 0);
+        step4(fr.getCSVParser(), "gold", 3);
         
         System.out.println("tests finished");
     }
