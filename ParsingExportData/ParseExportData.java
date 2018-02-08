@@ -9,6 +9,11 @@ import org.apache.commons.csv.*;
  */
 public class ParseExportData {
     
+    // Column names can change, so use constants for them.
+    private String COUNTRY_COLUMN = "Country";
+    private String EXPORTS_COLUMN = "Exports";
+    private String VALUE_COLUMN = "Value (dollars)";
+    
     /** Search for `country` in the CSV data represented by `parser`.  
      * 
      *  @param parser   An instance of `CSVParser` representing the data
@@ -24,7 +29,7 @@ public class ParseExportData {
             String countryValue = record.get("Country");
             if (countryValue.equals(country)) {
                 // Found it.  Build the country info string and return it.
-                return countryValue + ": " + record.get("Exports") + ": " + record.get("Value (dollars)");
+                return countryValue + ": " + record.get(EXPORTS_COLUMN) + ": " + record.get(VALUE_COLUMN);
             }
         }
         
@@ -40,10 +45,10 @@ public class ParseExportData {
      */
     public void listExportersTwoProducts (CSVParser parser, String exportItem1, String exportItem2) {
         for (CSVRecord record : parser) {
-            String exports = record.get("Exports");
+            String exports = record.get(EXPORTS_COLUMN);
             if (!exportItem1.isEmpty() && exports.contains(exportItem1) && 
                 !exportItem2.isEmpty() && exports.contains(exportItem2)) {
-                System.out.println(record.get("Country"));
+                System.out.println(record.get(COUNTRY_COLUMN));
             }
         }
     }
@@ -59,7 +64,7 @@ public class ParseExportData {
         int count = 0;
         if (! exportItem.isEmpty()) {
             for (CSVRecord record : parser) {
-                String exports = record.get("Exports");
+                String exports = record.get(EXPORTS_COLUMN);
                 if (exports.contains(exportItem)) {
                     count = count + 1;
                 }
@@ -79,9 +84,9 @@ public class ParseExportData {
     public void bigExporters (CSVParser parser, String value) {
         int valueLen = value.length();
         for (CSVRecord record : parser) {
-            String valueData = record.get("Value (dollars)");
+            String valueData = record.get(VALUE_COLUMN);
             if (valueData.length() > valueLen) {
-                System.out.println(record.get("Country") + " " + valueData);
+                System.out.println(record.get(COUNTRY_COLUMN) + " " + valueData);
             }
         }
     }
