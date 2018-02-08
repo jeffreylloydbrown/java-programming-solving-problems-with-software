@@ -32,11 +32,27 @@ public class ParseExportData {
         return "NOT FOUND";
     }
     
-    private void testCase(CSVParser parser, String country, String expected) {
+    public void listExportersTwoProducts (CSVParser parser, String exportItem1, String exportItem2) {
+        for (CSVRecord record : parser) {
+            String exports = record.get("Exports");
+            if (!exportItem1.isEmpty() && exports.contains(exportItem1) && 
+                !exportItem2.isEmpty() && exports.contains(exportItem2)) {
+                System.out.println(record.get("Country"));
+            }
+        }
+    }
+    
+    private void step2(CSVParser parser, String country, String expected) {
         String info = countryInfo(parser, country);
         if (! info.equals(expected)) {
             System.out.println(country+" -- expected '"+expected+"', got '"+info+"'");
         }
+    }
+    
+    private void step3 (CSVParser parser, String exportItem1, String exportItem2, String description) {
+        System.out.println(description);
+        listExportersTwoProducts(parser, exportItem1, exportItem2);
+        System.out.println("");
     }
     
     /** Test driver for ParseExportData */
@@ -46,9 +62,16 @@ public class ParseExportData {
         
         // Step 2.  Look up info on 1 particular country.
         // Expected result:  "Germany: motor vehicles, machinery, chemicals: $1,547,000,000,000"
-        testCase(fr.getCSVParser(), "Moon Base", "NOT FOUND");
-        testCase(fr.getCSVParser(), "Germany", "Germany: motor vehicles, machinery, chemicals: $1,547,000,000,000");
-        testCase(fr.getCSVParser(), "", "NOT FOUND");
+        step2(fr.getCSVParser(), "Moon Base", "NOT FOUND");
+        step2(fr.getCSVParser(), "Germany", "Germany: motor vehicles, machinery, chemicals: $1,547,000,000,000");
+        step2(fr.getCSVParser(), "", "NOT FOUND");
+        
+        // Step 3.  Return countries that export both items in the argument list.
+        step3(fr.getCSVParser(), "junk food", "gold", "Should be no countries");
+        step3(fr.getCSVParser(), "", "diamonds", "Should be no countries");
+        step3(fr.getCSVParser(), "gold", "", "Should be no countries");
+        step3(fr.getCSVParser(), "gold", "diamonds", "Should be Namibia, South Africa");
+        
         
         System.out.println("tests finished");
     }
