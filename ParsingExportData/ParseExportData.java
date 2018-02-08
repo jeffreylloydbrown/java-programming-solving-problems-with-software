@@ -147,5 +147,19 @@ public class ParseExportData {
         
         System.out.println("tests finished");
     }
+    
+    /** Used to answer questions posed by the homework practice quiz. */
+    public void quiz () {
+        FileResource fr = new FileResource("exports/exportdata.csv");
+        listExportersTwoProducts(fr.getCSVParser(), "fish", "nuts");
+        
+        System.out.println("gold exporters = " + numberOfExporters(fr.getCSVParser(), "gold"));
+        
+        System.out.println("Nauru exports");
+        System.out.println(countryInfo(fr.getCSVParser(), "Nauru"));
+        
+        System.out.println("big exporters");
+        bigExporters(fr.getCSVParser(), "$999,999,999,999");
+    }
 
 } // ParseExportData
