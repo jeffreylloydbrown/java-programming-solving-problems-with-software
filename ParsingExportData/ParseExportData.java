@@ -2,7 +2,7 @@ import edu.duke.*;
 import org.apache.commons.csv.*;
 
 /**
- * Write a description of ParseExportData here.
+ * Doing some simple data analysis on a CSV file of countries, exports, and export value.
  * 
  * @author Jeff Brown 
  * @version 1
@@ -18,7 +18,7 @@ public class ParseExportData {
      * 
      *  @param parser   An instance of `CSVParser` representing the data
      *  @param country  The country name to search for.
-     *  @returns If `country` is found, return <country>: <exports>: <value (dollars)>.  
+     *  @return If `country` is found, return "country: exports: value (dollars)".  
      *  If not found, returns "NOT FOUND".
      */
     public String countryInfo(CSVParser parser, String country) {
@@ -57,7 +57,7 @@ public class ParseExportData {
      * 
      *  @param parser   represents the data to search
      *  @param exportItem  the export item to search for
-     *  @returns the count of countries that export `exportItem`.  Returns zero if 
+     *  @return the count of countries that export `exportItem`.  Returns zero if 
      *  `exportItem` isn't found or is the empty string.
      */
     public int numberOfExporters (CSVParser parser, String exportItem) {
