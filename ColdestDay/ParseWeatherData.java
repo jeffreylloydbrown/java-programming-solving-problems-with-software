@@ -110,6 +110,41 @@ public class ParseWeatherData {
 
         return minimumFilename;
     }
+    
+    /** From a group of files the user picks, find the row of data containing
+     *  minimum value in the indicated `column` and return that row.
+     *  
+     *  @param column   the column to examine for the lowest value.  Must convert to a number.
+     *  @return the CSVRecord with the minimum value in `column`.  If no valid values found, 
+     *  return null.
+     */
+    public CSVRecord minimumValueManyFiles (String column) {
+        DirectoryResource dr = new DirectoryResource();
+        CSVRecord minimumSoFar = null;
+
+        for (File f : dr.selectedFiles()) {
+            FileResource fr = new FileResource(f);
+            CSVRecord currentMinimum = minimumValueInColumn(fr.getCSVParser(), column);
+            // Make sure we got a result before doing anything else.
+            if (currentMinimum != null) {
+                // First time thru
+                if (minimumSoFar == null) {
+                    minimumSoFar = currentMinimum;
+                } else {
+                    // Rest of the times thru.  Need values to compare.
+                    // Don't need to worry about invalid values here, because
+                    // we would not have got here if minimumValueInColumn() found nothing.
+                    double minimumValue = Double.parseDouble(minimumSoFar.get(column));
+                    double currentValue = Double.parseDouble(currentMinimum.get(column));
+                    if (currentValue < minimumValue) {
+                        minimumSoFar = currentMinimum;
+                    }
+                }
+            }
+        }
+
+        return minimumSoFar;
+    }
 
     /** From a group of files the user picks, find the name of the file containing the coldest 
      *  temperature value and return that name.
@@ -151,6 +186,27 @@ public class ParseWeatherData {
     public void testLowestHumidityInFile () {
         FileResource fr = new FileResource("nc_weather/2014/weather-2014-01-20.csv");
         CSVRecord lowestHumidity = lowestHumidityInFile(fr.getCSVParser());
+        System.out.println("Expected:  Lowest Humidity was 24 at 2014-01-20 19:51:00");
+        if (lowestHumidity != null) {
+            System.out.println("Lowest Humidity was " + lowestHumidity.get(HUMIDITY_COLUMN) + 
+                " at " + lowestHumidity.get(DATE_COLUMN));
+        } else {
+            System.out.println("no valid humidity found");
+        }
+    }
+    
+    /** From a group of files the user picks, find the row of data with the lowest
+     *  humidity value and return its data record.
+     *  
+     *  @return the data record containing the lowest humidity value in a group of files
+     */
+    public CSVRecord lowestHumidityInManyFiles () {
+        return minimumValueManyFiles(HUMIDITY_COLUMN);
+    }
+
+    /** Test driver for fileWithColdestTemperature() */
+    public void testLowestHumidityInManyFiles () {
+        CSVRecord lowestHumidity = lowestHumidityInManyFiles();
         System.out.println("Expected:  Lowest Humidity was 24 at 2014-01-20 19:51:00");
         if (lowestHumidity != null) {
             System.out.println("Lowest Humidity was " + lowestHumidity.get(HUMIDITY_COLUMN) + 
