@@ -14,6 +14,29 @@ public class ParseWeatherData {
     private String TIME_COLUMN = "TimeEST";
     private String HUMIDITY_COLUMN = "Humidity";
     private String DATE_COLUMN = "DateUTC";
+    
+    /** Convert the data found in column `column` of `record` into a numeric value.
+     * 
+     * @param record    the data record to examine.
+     * @param column    the column to attempt to convert into a number.
+     * @returns the converted value if possible, or Double.NaN if anything fails.
+     */
+    private double getNumber (CSVRecord record, String column) {
+        // I don't care that we don't know exception handling yet.
+        // The column might be empty, or not exist in the record.  Attempting
+        // the get will throw an exception.  The value might not be a number,
+        // so it won't parse and instead throw an exception.  In all those cases,
+        // return Double.NaN as the "value".
+        double result;
+        
+        try {
+            result = Double.parseDouble(record.get(column));
+        } catch (Exception e) {
+            result = Double.NaN;
+        }
+        
+        return result;
+    }
 
     /** Find the CSVRecord with the lowest value in the named `column` in the data.
      *  
@@ -25,25 +48,14 @@ public class ParseWeatherData {
     public CSVRecord minimumValueInColumn (CSVParser parser, String column) {
         CSVRecord minimumSoFar = null;
         for (CSVRecord currentRow : parser) {
-            // The data record for this column might be empty, or contain "n/a" or "na" or 
-            // "#N/A".  Skip those.
-            String columnData = currentRow.get(column).toUpperCase();
-            if (! columnData.isEmpty() && ! columnData.equals("N/A") && 
-            ! columnData.equals("na") && ! columnData.equals("#N/A")) {
-                // The columnData contains "something", try converting to a number.
-                // We're also told that sometimes "no data" is indicated with a -9999 value.
-                double columnValue = Double.parseDouble(columnData);
-                if (columnValue != -9999) {
-                    // Now we have a number that is valid.  Decide if we need
-                    // to remember this row.
-                    if (minimumSoFar == null) {
+            double currentValue = getNumber(currentRow, column);
+            if (currentValue != Double.NaN) {
+                if (minimumSoFar == null) {
+                    minimumSoFar = currentRow;
+                } else {
+                    double minimumValue = getNumber(minimumSoFar, column);
+                    if (currentValue < minimumValue) {
                         minimumSoFar = currentRow;
-                    } else {
-                        // Need values to compare.
-                        double minValueSoFar = Double.parseDouble(minimumSoFar.get(column));
-                        if (columnValue < minValueSoFar) {
-                            minimumSoFar = currentRow;
-                        }
                     }
                 }
             }
@@ -98,8 +110,8 @@ public class ParseWeatherData {
                     // Rest of the times thru.  Need values to compare.
                     // Don't need to worry about invalid values here, because
                     // we would not have got here if minimumValueInColumn() found nothing.
-                    double minimumValue = Double.parseDouble(minimumSoFar.get(column));
-                    double currentValue = Double.parseDouble(currentMinimum.get(column));
+                    double minimumValue = getNumber(minimumSoFar, column);
+                    double currentValue = getNumber(currentMinimum, column);
                     if (currentValue < minimumValue) {
                         minimumFilename = f.getName();
                         minimumSoFar = currentMinimum;
@@ -134,8 +146,8 @@ public class ParseWeatherData {
                     // Rest of the times thru.  Need values to compare.
                     // Don't need to worry about invalid values here, because
                     // we would not have got here if minimumValueInColumn() found nothing.
-                    double minimumValue = Double.parseDouble(minimumSoFar.get(column));
-                    double currentValue = Double.parseDouble(currentMinimum.get(column));
+                    double minimumValue = getNumber(minimumSoFar, column);
+                    double currentValue = getNumber(currentMinimum, column);
                     if (currentValue < minimumValue) {
                         minimumSoFar = currentMinimum;
                     }
