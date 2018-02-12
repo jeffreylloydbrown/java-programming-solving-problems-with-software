@@ -14,7 +14,43 @@ public class ParseWeatherData {
     private String TIME_COLUMN = "TimeEST";
     private String HUMIDITY_COLUMN = "Humidity";
     private String DATE_COLUMN = "DateUTC";
-    
+
+    /** Find the CSVRecord with the lowest value in the named `column` in the data.
+     *  
+     *  @param parser   represents the weather data to search
+     *  @param column   the name of the column being compared.  Must parse to a number.
+     *  @return the CSVRecord cooresponding to the lowest temperature seen in the data.  If
+     *  no valid return value found, returns null.
+     */
+    public CSVRecord minimumValueInColumn (CSVParser parser, String column) {
+        CSVRecord minimumSoFar = null;
+        for (CSVRecord currentRow : parser) {
+            // The data record for this column might be empty, or contain "n/a" or "na" or 
+            // "#N/A".  Skip those.
+            String columnData = currentRow.get(column).toUpperCase();
+            if (! columnData.isEmpty() && ! columnData.equals("N/A") && 
+            ! columnData.equals("na") && ! columnData.equals("#N/A")) {
+                // The columnData contains "something", try converting to a number.
+                // We're also told that sometimes "no data" is indicated with a -9999 value.
+                double columnValue = Double.parseDouble(columnData);
+                if (columnValue != -9999) {
+                    // Now we have a number that is valid.  Decide if we need
+                    // to remember this row.
+                    if (minimumSoFar == null) {
+                        minimumSoFar = currentRow;
+                    } else {
+                        // Need values to compare.
+                        double minValueSoFar = Double.parseDouble(minimumSoFar.get(column));
+                        if (columnValue < minValueSoFar) {
+                            minimumSoFar = currentRow;
+                        }
+                    }
+                }
+            }
+        }
+        return minimumSoFar;
+    }
+
     /** Find the CSVRecord with the coldest temperature in the data and thus all the information about 
      *  the coldest temperature, such as the hour of the coldest temperature.
      *  
@@ -22,73 +58,77 @@ public class ParseWeatherData {
      *  @return the CSVRecord cooresponding to the lowest temperature seen in the data. 
      */
     public CSVRecord coldestHourInFile (CSVParser parser) {
-        CSVRecord coldestSoFar = null;
-        for (CSVRecord currentRow : parser) {
-            if (coldestSoFar == null) {
-                coldestSoFar = currentRow;
-            } else {
-                // Need temps to compare.
-                double coldestTemp = Double.parseDouble(coldestSoFar.get(TEMPERATURE_COLUMN));
-                double currentTemp = Double.parseDouble(currentRow.get(TEMPERATURE_COLUMN));
-                if (currentTemp != -9999 && currentTemp < coldestTemp) {
-                    coldestSoFar = currentRow;
-                }
-            }
-        }
-        return coldestSoFar;
+        return minimumValueInColumn(parser, TEMPERATURE_COLUMN);
     }
-    
+
     /** Test driver for coldestHourInFile() */
     public void testColdestHourInFile () {
         FileResource fr = new FileResource("nc_weather/2014/weather-2014-01-08.csv");
         CSVRecord coldestHour = coldestHourInFile(fr.getCSVParser());
         if (coldestHour != null) {
             System.out.println("coldest temp is " + coldestHour.get(TEMPERATURE_COLUMN) + 
-                               " at time " + coldestHour.get(TIME_COLUMN));
+                " at time " + coldestHour.get(TIME_COLUMN));
         } else {
             System.out.println("no valid temperature found");
         }
     }
-    
+
+    /** From a group of files the user picks, find the name of the file containing the
+     *  minimum value in the indicated `column` and return the that file's name.
+     *  
+     *  @param column   the column to examine for the lowest value.  Must convert to a number.
+     *  @return the filename of the data file that contains the minimum value in the
+     *  passed `column` in a group of files.
+     */
+    public String fileWithMinimumValue (String column) {
+        DirectoryResource dr = new DirectoryResource();
+        String minimumFilename = null;
+        CSVRecord minimumSoFar = null;
+
+        for (File f : dr.selectedFiles()) {
+            FileResource fr = new FileResource(f);
+            CSVRecord currentMinimum = minimumValueInColumn(fr.getCSVParser(), column);
+            // Make sure we got a result before doing anything else.
+            if (currentMinimum != null) {
+                // First time thru
+                if (minimumFilename == null || minimumSoFar == null) {
+                    minimumFilename = f.getName();  // getCanonicalPath() requires an exception handler.
+                    minimumSoFar = currentMinimum;
+                } else {
+                    // Rest of the times thru.  Need values to compare.
+                    // Don't need to worry about invalid values here, because
+                    // we would not have got here if minimumValueInColumn() found nothing.
+                    double minimumValue = Double.parseDouble(minimumSoFar.get(column));
+                    double currentValue = Double.parseDouble(currentMinimum.get(column));
+                    if (currentValue < minimumValue) {
+                        minimumFilename = f.getName();
+                        minimumSoFar = currentMinimum;
+                    }
+                }
+            }
+        }
+
+        return minimumFilename;
+    }
+
     /** From a group of files the user picks, find the name of the file containing the coldest 
      *  temperature value and return that name.
      *  
      *  @return the filename of the weather data file that contains the coldest temperature in a group of files.
      */
     public String fileWithColdestTemperature () {
-        DirectoryResource dr = new DirectoryResource();
-        String coldestFilename = null;
-        CSVRecord coldestSoFar = null;
-        
-        for (File f : dr.selectedFiles()) {
-            FileResource fr = new FileResource(f);
-            CSVRecord currentColdest = coldestHourInFile(fr.getCSVParser());
-            if (coldestFilename == null || coldestSoFar == null) {
-                coldestFilename = f.getName();  // getCanonicalPath() requires an exception handler.
-                coldestSoFar = currentColdest;
-            } else {
-                // Need temps to compare.
-                double coldestTemp = Double.parseDouble(coldestSoFar.get(TEMPERATURE_COLUMN));
-                double currentTemp = Double.parseDouble(currentColdest.get(TEMPERATURE_COLUMN));
-                if (currentTemp != -9999 && currentTemp < coldestTemp) {
-                    coldestFilename = f.getName();
-                    coldestSoFar = currentColdest;
-                }
-            }
-        }
-        
-        return coldestFilename;
+        return fileWithMinimumValue(TEMPERATURE_COLUMN);
     }
-    
+
     /** Test driver for fileWithColdestTemperature() */
     public void testFileWithColdestTemperature () {
         String coldestFilename = fileWithColdestTemperature();
-        
+
         // using getCanonicalPath() in fileWithColdestTemperature() requires an exception handler,
         // which we don't know yet.  So this test is kludged to hardcode choices in the 2014 directory.
         FileResource fr = new FileResource("nc_weather/2014/"+coldestFilename);
         CSVRecord coldestHour = coldestHourInFile(fr.getCSVParser());
-        
+
         System.out.println("Coldest day was in file " + coldestFilename);
         System.out.println("Coldest temperature on that day was " + coldestHour.get(TEMPERATURE_COLUMN));
         System.out.println("All the Temperatures on the coldest day were:");
