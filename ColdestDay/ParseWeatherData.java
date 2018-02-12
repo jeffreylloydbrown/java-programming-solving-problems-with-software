@@ -136,5 +136,28 @@ public class ParseWeatherData {
             System.out.println(row.get(DATE_COLUMN) + ": " + row.get(TEMPERATURE_COLUMN));
         }
     }
+    
+    /** Find the CSVRecord with the lowest humidity in the data and thus all the information about 
+     *  that day, such as the hour of the lowest humidity.
+     *  
+     *  @param parser   represents the weather data to search
+     *  @return the CSVRecord cooresponding to the lowest humidity seen in the data. 
+     */
+    public CSVRecord lowestHumidityInFile (CSVParser parser) {
+        return minimumValueInColumn(parser, HUMIDITY_COLUMN);
+    }
+    
+    /** Test driver for lowestHumidityInFile(). */
+    public void testLowestHumidityInFile () {
+        FileResource fr = new FileResource("nc_weather/2014/weather-2014-01-20.csv");
+        CSVRecord lowestHumidity = lowestHumidityInFile(fr.getCSVParser());
+        System.out.println("Expected:  Lowest Humidity was 24 at 2014-01-20 19:51:00");
+        if (lowestHumidity != null) {
+            System.out.println("Lowest Humidity was " + lowestHumidity.get(HUMIDITY_COLUMN) + 
+                " at " + lowestHumidity.get(DATE_COLUMN));
+        } else {
+            System.out.println("no valid humidity found");
+        }
+    }
 
 }  // ParseWeatherData
