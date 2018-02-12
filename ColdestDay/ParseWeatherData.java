@@ -227,5 +227,78 @@ public class ParseWeatherData {
             System.out.println("no valid humidity found");
         }
     }
+    
+    // Calculate an average temperature for days with some minimum humidity.  Humidity cannot
+    // be negative, so to get just a simple average of all temperatures pass a negative
+    // humidity value.
+    private double averageTemperatureWithMinimumHumidity (CSVParser parser, int minHumidity) {
+        double totalTemp = 0.0;
+        int count = 0;
+        for (CSVRecord record : parser) {
+            double temp = getNumber(record, TEMPERATURE_COLUMN);
+            double humidity = getNumber(record, HUMIDITY_COLUMN);
+            if (humidity >= minHumidity) {
+                totalTemp = totalTemp + temp;
+                count = count + 1;
+            }
+        }
+        
+        if (count == 0) {
+            return Double.NaN;
+        } else {
+            return totalTemp / count;
+        }
+    }
+    
+    /** Calculate the average temperature in the data represented by `parser`.
+     * 
+     *  @param parser   the data to calculate the average temperature on.
+     *  @return the average temperature of the data `parser` represents.  If no average
+     *  possible, then return Double.NaN.
+     */
+    public double averageTemperatureInFile (CSVParser parser) {
+        return averageTemperatureWithMinimumHumidity(parser, -9999);
+    }
+    
+    /** Test driver for averageTemperatureInFile(). */
+    public void testAverageTemperatureInFile () {
+        FileResource fr = new FileResource("nc_weather/2014/weather-2014-01-20.csv");
+        System.out.println("Expected:  Average temperature in file is 44.93333333333334");
+        System.out.println("Average temperature in file is " + averageTemperatureInFile(fr.getCSVParser()));
+    }
+    
+    /** Calculate the average temperature in the data represented by `parser`, but only
+     *  for days at least as humid as `minHumidity`.
+     * 
+     *  @param parser   the data to calculate the average temperature on.
+     *  @param minHumidity  the minimum humidity to qualify a measurement for being in the average.
+     *  @return the average temperature of the data `parser` represents.  If no average
+     *  possible, then return Double.NaN.
+     */
+    public double averageTemperatureWithHighHumidityInFile (CSVParser parser, int minHumidity) {
+        return averageTemperatureWithMinimumHumidity(parser, minHumidity);
+    }
+    
+    /** Test driver for averageTemperatureWithHighHumidityInFile(). */
+    public void testAverageTemperatureWithHighHumidityInFile () {
+        FileResource fr = new FileResource("nc_weather/2014/weather-2014-01-20.csv");
+        double avg;
+        System.out.println("Case 1 Expected:  No temperatures with that humidity");
+        avg = averageTemperatureWithHighHumidityInFile(fr.getCSVParser(), 80);
+        if (! Double.isNaN(avg)) {
+            System.out.println("Average Temp when high Humidity is " + avg);
+        } else {
+            System.out.println("No temperatures with that humidity");
+        }
+        
+        System.out.println("Case 2 Expected:  Average Temp when high Humidity is 41.78666666666667");
+        fr = new FileResource("nc_weather/2014/weather-2014-03-20.csv");
+        avg = averageTemperatureWithHighHumidityInFile(fr.getCSVParser(), 80);
+        if (! Double.isNaN(avg)) {
+            System.out.println("Average Temp when high Humidity is " + avg);
+        } else {
+            System.out.println("No temperatures with that humidity");
+        }
+    }
 
 }  // ParseWeatherData
