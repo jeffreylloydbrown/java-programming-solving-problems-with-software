@@ -300,5 +300,35 @@ public class ParseWeatherData {
             System.out.println("No temperatures with that humidity");
         }
     }
+    
+    public void finalQuiz () {
+        FileResource fr = new FileResource("nc_weather/2014/weather-2014-06-29.csv");
+        CSVRecord lowestHumidity = lowestHumidityInFile(fr.getCSVParser());
+        System.out.println("lowest humidity on 6/29/14 was " + getNumber(lowestHumidity, HUMIDITY_COLUMN));
+        
+        fr = new FileResource("nc_weather/2014/weather-2014-07-22.csv");
+        lowestHumidity = lowestHumidityInFile(fr.getCSVParser());
+        System.out.println("lowest humidity on 7/22/14 was " + getNumber(lowestHumidity, HUMIDITY_COLUMN) + 
+            " at " + lowestHumidity.get(DATE_COLUMN));
+        
+        lowestHumidity = lowestHumidityInManyFiles();
+        System.out.println("lowest humidity in 2013 was " + getNumber(lowestHumidity, HUMIDITY_COLUMN) +
+            " at " + lowestHumidity.get(DATE_COLUMN));
+       
+        fr = new FileResource("nc_weather/2013/weather-2013-08-10.csv");
+        double averageTemp = averageTemperatureInFile(fr.getCSVParser());
+        System.out.println("average temp on 8/10/2013 was " + averageTemp);
+        
+        fr = new FileResource("nc_weather/2013/weather-2013-09-02.csv");
+        averageTemp = averageTemperatureWithHighHumidityInFile(fr.getCSVParser(), 80);
+        System.out.println("average temp over 80% humidity on 9/2/2013 is " + averageTemp);
+        
+        String filename = fileWithColdestTemperature();
+        System.out.println("file with coldest 2013 temperature = " + filename);
+        
+        fr = new FileResource("nc_weather/2013/"+filename);
+        CSVRecord coldest = coldestHourInFile(fr.getCSVParser());
+        System.out.println("coldest temperature that day is " + getNumber(coldest, TEMPERATURE_COLUMN));
+    }
 
 }  // ParseWeatherData

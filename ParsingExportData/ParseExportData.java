@@ -149,7 +149,7 @@ public class ParseExportData {
     }
     
     /** Used to answer questions posed by the homework practice quiz. */
-    public void quiz () {
+    public void practiceQuiz () {
         FileResource fr = new FileResource("exports/exportdata.csv");
         listExportersTwoProducts(fr.getCSVParser(), "fish", "nuts");
         
@@ -159,6 +159,16 @@ public class ParseExportData {
         System.out.println(countryInfo(fr.getCSVParser(), "Nauru"));
         
         System.out.println("big exporters");
+        bigExporters(fr.getCSVParser(), "$999,999,999,999");
+    }
+    
+    /** Used to answer questions posed by the final homework submitted quiz. */
+    public void finalQuiz () {
+        FileResource fr = new FileResource("exports/exportdata.csv");
+        listExportersTwoProducts(fr.getCSVParser(), "cotton", "flowers");
+        
+        System.out.println("cocoa exporters = " + numberOfExporters(fr.getCSVParser(), "cocoa"));
+        System.out.println("trillion+ dollar exporters:");
         bigExporters(fr.getCSVParser(), "$999,999,999,999");
     }
 
