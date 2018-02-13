@@ -1,0 +1,8 @@
+1.  59.46
+2.  5.95
+3.  8.49
+4.  62.65
+5.  dataset5.txt
+6.  2nd choice (count = count + count) always zero.
+7.  The function computes the percentage of those points from the Shape s that have a positive X and a negative Y.
+
