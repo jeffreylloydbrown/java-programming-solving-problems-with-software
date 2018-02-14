@@ -7,21 +7,21 @@ import org.apache.commons.csv.*;
  * 
  * @author Jeff Brown
  * @version 1
- *
+ * <p>
  * Baby name data is provided in a series of CSV files.  There is by-year data
  * in the us_babynames_by_year directory.  There is by-decade data in the 
  * us_babynames_by_decade directory.  There are small test datafiles in the
  * us_babynames_test directory.  All data files share a common format,
  * and none have header rows.  (So catting them together is easy.)
- * 
+ * <p>
  * Name, Gender, Count
  * Name:  the baby name
  * Gender:  "M" for male and "F" for female.  Other codes are not supported.
  * Count: the number of babies born with `name`.  String representation of an integer.
- * 
+ * <p>
  * Data file rows are presorted by females, then males, each in descending count
  * order.
- * 
+ * <p>
  * All by-year files are called "yobNNNN.csv", where NNNN is the year.
  * All by-decade files are called "yobDDDDs.csv", where DDDD is a 4-digit decade like 1890, 1900, 1910, etc.
  * The small test files use "yobNNNNshort.csv", where NNNN is the year.  There is also
@@ -201,7 +201,7 @@ public class BabyBirths {
     }
     
     /** Given a `name` and `gender` in some `year`, determine how many babies were
-     *  born with a higher ranked (meaning lower rank number) than `name`.
+     *  born with a higher ranked name (meaning lower rank number) than `name`.
      *  
      *  @param year     The year to search for `name` to get its rank
      *  @param name     The baby name to search for
