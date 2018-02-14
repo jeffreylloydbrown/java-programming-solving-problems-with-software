@@ -46,7 +46,7 @@ public class BabyBirths {
     private String FEMALE = "F";
 
     // Accessors to help code readability, instead of more cryptic get() calls.
-    private String getName (CSVRecord record) { return record.get(NAME); }
+    private String getBabyName (CSVRecord record) { return record.get(NAME); }
 
     private String getGender (CSVRecord record) { return record.get(GENDER); }
 
@@ -82,7 +82,7 @@ public class BabyBirths {
         String filename = "us_babynames_by_year/yob" + year + ".csv";
         FileResource fr = new FileResource(filename);
         for (CSVRecord rec : fr.getCSVParser(false)) {
-            String name = getName(rec);
+            String name = getBabyName(rec);
             String gender = getGender(rec);
             // TODO
         }
@@ -94,7 +94,7 @@ public class BabyBirths {
         for (CSVRecord rec : fr.getCSVParser(false)) {
             int numBorn = getCount(rec);
             if (numBorn <= 100) {
-                System.out.println("Name " + getName(rec) + 
+                System.out.println("Name " + getBabyName(rec) + 
                     " Gender " + getGender(rec) +
                     " Num Born " + getCount(rec));
             }
@@ -130,6 +130,79 @@ public class BabyBirths {
         fr = new FileResource("us_babynames_by_year/yob2014.csv");
         System.out.println("Expect 3670151 total births, 1768775 females, 1901376 males");
         totalBirths(fr);
+    }
+    
+    /** Given a `name`, a `gender` and a `year`, determine the rank of `name` in `year`.
+     *  Rank starts at 1.  That is, the most popular name of each gender is rank 1.
+     *  
+     *  @param year     The year to examine.
+     *  @param name     The baby name to find in `year`
+     *  @param gender   The gender to use in the search
+     *  @return the rank of `name` in `year`.  If `name` isn't found, return -1.
+     */
+    public int getRank (int year, String name, String gender) {
+        return -1;
+    }
+    
+    /** Given a `rank` in a `year` for a particular `gender`, look up and return the
+     *  baby name at that rank.
+     *  
+     *  @param year     The year to examine.
+     *  @param rank     The nth name to find.
+     *  @param gender   The gender to use in the search
+     *  @return the baby name at `rank` in `year` for `gender`.  If no such rank
+     *  exists, return "NO NAME".
+     */
+    public String getName (int year, int rank, String gender) {
+        return "NO NAME";
+    }
+    
+    /** Given a `name` in a `year` and a `gender`, look up that same name and gender in 
+     *  `newYear` and print `name` born in `year` would be `newName` if she/he was born in `newYear`.
+     *  
+     *  @param name     The baby name to find in `year`
+     *  @param year     The year to search for `name` to get its rank
+     *  @param newYear  The other year to search for that same rank
+     *  @param gender   The gender to use in the search
+     */
+    public void whatIsNameInYear (String name, int year, int newYear, String gender) {
+    }
+    
+    /** Given a set of data files selected by the user, determine when `name` and `gender`
+     *  had the highest rank.
+     *  
+     *  @param name     The baby name to search for
+     *  @param gender   The gender to use in the search
+     *  @return the year where `name` & `gender` are the most frequent.  If `name`
+     *  isn't found, return -1.
+     */
+    public int yearOfHighestRank (String name, String gender) {
+        return -1;
+    }
+    
+    /** Given a set of data files selected by the user, determine the average rank
+     *  held by `name` and `gender`.
+     *  
+     *  @param name     The baby name to search for
+     *  @param gender   The gender to use in the search
+     *  @return the average rank that `name` has within the selected data files.
+     *  If `name` isn't ranked in any of the files, return -1.0.
+     */
+    public double getAverageRank (String name, String gender) {
+        return -1.0;
+    }
+    
+    /** Given a `name` and `gender` in some `year`, determine how many babies were
+     *  born with a higher ranked (meaning lower rank number) than `name`.
+     *  
+     *  @param year     The year to search for `name` to get its rank
+     *  @param name     The baby name to search for
+     *  @param gender   The gender to use in the search
+     *  @return the total number of births, regardless of gender, that have names
+     *  more popular than `name`.
+     */
+    public int getTotalBirthsRankedHigher (int year, String name, String gender) {
+        return -1;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
