@@ -69,6 +69,15 @@ public class BabyBirths {
     private boolean isFemale (CSVRecord record) { return getGender(record).equals(FEMALE); }
 
     private boolean isMale (CSVRecord record) { return getGender(record).equals(MALE); }
+    
+    // We will need to build a filename from a year code.
+    private String byYearFilename (int year) { return "us_babynames_by_year/yob" + year + ".csv"; }
+    
+    private String byDecadeFilename (int year) { return "us_babynames_by_decade/yob" + year + "s.csv"; }
+    
+    private String byTestFilename (int year) { return "us_babynames_test/yob" + year + "short.csv"; }
+    
+    private String EXAMPLE_FILENAME = "us_babynames_test/example-small.csv";
 
     //////////////////////////////////////////////////////////////////////////////////
     //// Primary implementation.                                                  ////
@@ -79,8 +88,7 @@ public class BabyBirths {
      *  @param year     the year to read
      */
     public void readOneFile (int year) {
-        String filename = "us_babynames_by_year/yob" + year + ".csv";
-        FileResource fr = new FileResource(filename);
+        FileResource fr = new FileResource(byYearFilename(year));
         for (CSVRecord rec : fr.getCSVParser(false)) {
             String name = getBabyName(rec);
             String gender = getGender(rec);
@@ -123,11 +131,11 @@ public class BabyBirths {
     
     /** Test driver for totalBirths(), from the course video. */
     public void testTotalBirths () {
-        FileResource fr = new FileResource("us_babynames_test/example-small.csv");
+        FileResource fr = new FileResource(EXAMPLE_FILENAME);
         System.out.println("Expect 1700 total births, 1500 females, 200 males");
         totalBirths(fr);
         
-        fr = new FileResource("us_babynames_by_year/yob2014.csv");
+        fr = new FileResource(byYearFilename(2014));
         System.out.println("Expect 3670151 total births, 1768775 females, 1901376 males");
         totalBirths(fr);
     }
