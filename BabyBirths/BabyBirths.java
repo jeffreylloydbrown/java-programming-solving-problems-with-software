@@ -19,6 +19,9 @@ import org.apache.commons.csv.*;
  * Gender:  "M" for male and "F" for female.  Other codes are not supported.
  * Count: the number of babies born with `name`.  String representation of an integer.
  * 
+ * Data file rows are presorted by females, then males, each in descending count
+ * order.
+ * 
  * All by-year files are called "yobNNNN.csv", where NNNN is the year.
  * All by-decade files are called "yobDDDDs.csv", where DDDD is a 4-digit decade like 1890, 1900, 1910, etc.
  * The small test files use "yobNNNNshort.csv", where NNNN is the year.  There is also
@@ -71,5 +74,23 @@ public class BabyBirths {
     //////////////////////////////////////////////////////////////////////////////////
     //// Primary implementation.                                                  ////
     //////////////////////////////////////////////////////////////////////////////////
+    
+    
+    //////////////////////////////////////////////////////////////////////////////////
+    //// Higher level tests.                                                      ////
+    //////////////////////////////////////////////////////////////////////////////////
+    
+    // These answers come from the course videos, which will become test cases.
+    // 
+    // Jennifer in 1994 is rank 21.
+    // Jennifer in 1994 is Grace in 2014.  (Grace is rank 21 in 2014.)
+    // 2000s rank 21 is Alexandra
+    // 1990s rank 21 is Crystal
+    // 1980s rank 21 is Erica
+    // 1970s rank 21 is Barbara
+    // 1920s rank 21 is Edith
+    // 1910s rank 21 is Lucille
+    // 1900s rank 21 is Sarah
+    // 1890s rank 21 is Cora    
 
 }  // BabyBirths
