@@ -66,9 +66,11 @@ public class BabyBirths {
     }
 
     // We will need to test for gender, so encapsulate those.
-    private boolean isFemale (CSVRecord record) { return getGender(record).equals(FEMALE); }
+    private boolean isFemale (CSVRecord record) { return isGender(record, FEMALE); }
 
-    private boolean isMale (CSVRecord record) { return getGender(record).equals(MALE); }
+    private boolean isMale (CSVRecord record) { return isGender(record, MALE); }
+    
+    private boolean isGender (CSVRecord record, String gender) { return getGender(record).equals(gender); }
     
     // We will need to build a filename from a year code.
     private String byYearFilename (int year) { return "us_babynames_by_year/yob" + year + ".csv"; }
@@ -228,6 +230,6 @@ public class BabyBirths {
     // 1920s rank 21 is Edith
     // 1910s rank 21 is Lucille
     // 1900s rank 21 is Sarah
-    // 1890s rank 21 is Cora    
+    // 1890s rank 21 is Cora  
 
 }  // BabyBirths
