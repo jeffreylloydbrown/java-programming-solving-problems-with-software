@@ -72,6 +72,12 @@ public class BabyBirths {
     
     private boolean isGender (CSVRecord record, String gender) { return getGender(record).equals(gender); }
     
+    private String genderPronoun(String gender) {
+        if (gender.equals(MALE))         return "he";
+        else if (gender.equals(FEMALE))  return "she";
+        else                             return "don't recognize gender '" + gender + "'";
+    }
+    
     // We will need to build a filename from a year code.
     private String byYearFilename (int year) { return "us_babynames_by_year/yob" + year + ".csv"; }
     
@@ -176,6 +182,51 @@ public class BabyBirths {
      *  @param gender   The gender to use in the search
      */
     public void whatIsNameInYear (String name, int year, int newYear, String gender) {
+        String newName = "NO NAME";
+        System.out.println(name + " born in " + year + " would be " + newName + 
+                            " if " + genderPronoun(gender) + " was born in " + newYear + ".");
+    }
+    
+    public void testWhatIsNameInYear () {
+        // Jennifer in 1994 is rank 21.
+        // Jennifer in 1994 is Grace in 2014.  (Grace is rank 21 in 2014.)
+        System.out.println("Expect:  Jennifer born in 1994 would be Grace if she was born in 2014.");
+        whatIsNameInYear("Jennifer", 1994, 2014, FEMALE);
+    }
+    
+    /** Given a `name` in a `year` and a `gender`, look up that same name and gender in 
+     *  `decade` and print `name` born in `year` would be `newName` if she/he was born in the `newYear`s.
+     *  
+     *  @param name     The baby name to find in `year`
+     *  @param year     The year to search for `name` to get its rank
+     *  @param newYear  The other year to search for that same rank
+     *  @param gender   The gender to use in the search
+     */
+    public void whatIsNameInDecade (String name, int year, int decade, String gender) {
+        String newName = "NO NAME";
+        System.out.println(name + " born in " + year + " would be " + newName + 
+                            " if " + genderPronoun(gender) + " was born in the " + decade + "s.");
+    }
+    
+    public void testWhatIsNameInDecade () {
+    System.out.println("Expected:  Jennifer born in 1994 would be Alexandra if she was born in the 2000s.");
+    whatIsNameInDecade("Jennifer", 1994, 2000, FEMALE);
+    System.out.println("1990 is Crystal");
+    whatIsNameInDecade("Jennifer", 1994, 1990, FEMALE);
+    System.out.println("1980 is Erica");
+    whatIsNameInDecade("Jennifer", 1994, 1980, FEMALE);
+    System.out.println("1970 is Barbara");
+    whatIsNameInDecade("Jennifer", 1994, 1970, FEMALE);
+    System.out.println("1920 is Edith");
+    whatIsNameInDecade("Jennifer", 1994, 1920, FEMALE);
+    System.out.println("1910 is Lucille");
+    whatIsNameInDecade("Jennifer", 1994, 1910, FEMALE);
+    System.out.println("1900 is Sarah");
+    whatIsNameInDecade("Jennifer", 1994, 1900, FEMALE);
+    System.out.println("1890 is Cora");
+    whatIsNameInDecade("Jennifer", 1994, 1890, FEMALE);
+    System.out.println("NO NAME");
+    whatIsNameInDecade("Jennifer", 1994, 2000, MALE);
     }
     
     /** Given a set of data files selected by the user, determine when `name` and `gender`
@@ -214,22 +265,5 @@ public class BabyBirths {
     public int getTotalBirthsRankedHigher (int year, String name, String gender) {
         return -1;
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    //// Higher level tests.                                                      ////
-    //////////////////////////////////////////////////////////////////////////////////
-
-    // These answers come from the course videos, which will become test cases.
-    // 
-    // Jennifer in 1994 is rank 21.
-    // Jennifer in 1994 is Grace in 2014.  (Grace is rank 21 in 2014.)
-    // 2000s rank 21 is Alexandra
-    // 1990s rank 21 is Crystal
-    // 1980s rank 21 is Erica
-    // 1970s rank 21 is Barbara
-    // 1920s rank 21 is Edith
-    // 1910s rank 21 is Lucille
-    // 1900s rank 21 is Sarah
-    // 1890s rank 21 is Cora  
 
 }  // BabyBirths
