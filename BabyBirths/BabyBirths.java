@@ -69,22 +69,22 @@ public class BabyBirths {
     private boolean isFemale (CSVRecord record) { return isGender(record, FEMALE); }
 
     private boolean isMale (CSVRecord record) { return isGender(record, MALE); }
-    
+
     private boolean isGender (CSVRecord record, String gender) { return getGender(record).equals(gender); }
-    
+
     private String genderPronoun(String gender) {
         if (gender.equals(MALE))         return "he";
         else if (gender.equals(FEMALE))  return "she";
         else                             return "don't recognize gender '" + gender + "'";
     }
-    
+
     // We will need to build a filename from a year code.
     private String byYearFilename (int year) { return "us_babynames_by_year/yob" + year + ".csv"; }
-    
+
     private String byDecadeFilename (int year) { return "us_babynames_by_decade/yob" + year + "s.csv"; }
-    
+
     private String byTestFilename (int year) { return "us_babynames_test/yob" + year + "short.csv"; }
-    
+
     private String EXAMPLE_FILENAME = "us_babynames_test/example-small.csv";
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -136,18 +136,18 @@ public class BabyBirths {
         System.out.println("total girls = " + totalGirls);
         System.out.println("total boys = " + totalBoys);
     }
-    
+
     /** Test driver for totalBirths(), from the course video. */
     public void testTotalBirths () {
         FileResource fr = new FileResource(EXAMPLE_FILENAME);
         System.out.println("Expect 1700 total births, 1500 females, 200 males");
         totalBirths(fr);
-        
+
         fr = new FileResource(byYearFilename(2014));
         System.out.println("Expect 3670151 total births, 1768775 females, 1901376 males");
         totalBirths(fr);
     }
-    
+
     /** Given a FileResource and a `gender`, create a StorageResource that
      *  contain only rows matching `gender`.
      *  
@@ -159,6 +159,8 @@ public class BabyBirths {
      *  is actually a supported gender, so future genders won't change this code.
      *  @return a StorageResource that contains only records matching `gender`, in
      *  the order they occur in `fr`.
+     *  @throws exception if `fr` isn't valid.
+     *  @throws exception if `fr` does not represent CSV data.
      */
     public MyStorageResource filterByGender (FileResource fr, String gender) {
         MyStorageResource sr = new MyStorageResource();
@@ -169,7 +171,22 @@ public class BabyBirths {
         }
         return sr;
     }
+
+    // Control whether we use the simplified test data or the real data for a year.
+    // The decade data doesn't have simplified data, so no need to do this for decade stuff.
+    // Unit tests should start by calling useTestData() and finish by calling useRealData().
+    private boolean testWithSimpleData = false;
+    private void useTestData() { testWithSimpleData = true; }
+
+    private void useRealData() { testWithSimpleData = false; }
+
+    private String getFilename(int year) {
+        return (testWithSimpleData) ? byTestFilename(year) : byYearFilename(year);
+    }
     
+    // Return true if a string is actually present:  not null and not empty.
+    private boolean hasValue (String s) { return s != null && ! s.isEmpty(); }
+
     /** Given a `name`, a `gender` and a `year`, determine the rank of `name` in `year`.
      *  Rank starts at 1.  That is, the most popular name of each gender is rank 1.
      *  
@@ -177,11 +194,44 @@ public class BabyBirths {
      *  @param name     The baby name to find in `year`
      *  @param gender   The gender to use in the search
      *  @return the rank of `name` in `year`.  If `name` isn't found, return -1.
+     *  @throws exception if `year` does not have a data file.
      */
     public int getRank (int year, String name, String gender) {
+        // Only bother searching if name and gender are actually present.
+        if (hasValue(name) && hasValue(gender)) {
+            FileResource fr = new FileResource(getFilename(year));
+            CSVParser parser = filterByGender(fr, gender).getCSVParser(false);
+
+            // Thanks to filtering, I don't need to count the records seen.
+            // The parser keeps track of that for me, and starts with 1.
+            // Perfect.
+            for (CSVRecord rec : parser) {
+                if (getBabyName(rec).equals(name)) {
+                    return (int) parser.getRecordNumber();
+                }
+            }
+        }
+
+        // Didn't find name.
         return -1;
     }
-    
+
+    /** Test driver for getRank(). */
+    void testGetRank () {
+        useTestData();
+        System.out.println("Expect 1 for Sophia, got "+getRank(2012, "Sophia", "F"));
+        System.out.println("Expect 4 for Olivia, got "+getRank(2012, "Olivia", "F"));
+        System.out.println("Expect 1 for Jacob, got "+getRank(2012, "Jacob", "M"));
+        System.out.println("Expect 2 for Mason, got "+getRank(2012, "Mason", "M"));
+        System.out.println("Expect 3 for Ethan, got "+getRank(2012, "Ethan", "M"));
+        System.out.println("Expect -1 for female Mason, got "+getRank(2012, "Mason", "F"));
+        System.out.println("Expect -1 for male Olivia, got "+getRank(2012, "Olivia", "M"));
+        System.out.println("Expect -1 for female empty name, got "+getRank(2012, "", "F"));
+        System.out.println("Expect -1 for male null, got "+getRank(2012, null, "M"));
+        System.out.println("Expect -1 for unsupported gender, got "+getRank(2012, "Sophia", ""));
+        useRealData();
+    }
+
     /** Given a `rank` in a `year` for a particular `gender`, look up and return the
      *  baby name at that rank.
      *  
@@ -190,11 +240,45 @@ public class BabyBirths {
      *  @param gender   The gender to use in the search
      *  @return the baby name at `rank` in `year` for `gender`.  If no such rank
      *  exists, return "NO NAME".
+     *  @throws exception if `year` does not have a data file.
      */
     public String getName (int year, int rank, String gender) {
+        FileResource fr = new FileResource(getFilename(year));
+        CSVParser parser = filterByGender(fr, gender).getCSVParser(false);
+
+        // If rank is not at least 1, don't bother searching.
+        if (rank >= 1) {
+            // Thanks to filtering, I simply have to count down the
+            // rank number (a parser cannot return a specific record 
+            // directly, itself).  When it reaches 1, return the name 
+            // from the current record.
+            for (CSVRecord rec : parser) {
+                if (rank == 1) {
+                    return getBabyName(rec);
+                }
+                rank = rank - 1;
+            }
+        }
+
+        // Rank doesn't exist, too big or too small.
         return "NO NAME";
     }
-    
+
+    /** Test driver for getName(). */
+    void testGetName () {
+        useTestData();
+        System.out.println("Expect Sophia for #1 female, got "+getName(2012, 1, "F"));
+        System.out.println("Expect Olivia for #4 female, got "+getName(2012, 4, "F"));
+        System.out.println("Expect Jacob for #1 male, got "+getName(2012, 1, "M"));
+        System.out.println("Expect Mason for #2 male, got "+getName(2012, 2, "M"));
+        System.out.println("Expect Ethan for #3 male, got "+getName(2012, 3, "M"));
+        System.out.println("Expect NO NAME for #6 female, got "+getName(2012, 6, "F"));
+        System.out.println("Expect NO NAME for #6 male, got "+getName(2012, 6, "M"));
+        System.out.println("Expect NO NAME for -1 female, got "+getName(2012, -1, "F"));
+        System.out.println("Expect NO NAME for -1 male, got "+getName(2012, -1, "M"));
+        useRealData();
+    }
+
     /** Given a `name` in a `year` and a `gender`, look up that same name and gender in 
      *  `newYear` and print `name` born in `year` would be `newName` if she/he was born in `newYear`.
      *  
@@ -202,20 +286,26 @@ public class BabyBirths {
      *  @param year     The year to search for `name` to get its rank
      *  @param newYear  The other year to search for that same rank
      *  @param gender   The gender to use in the search
+     *  @throws exception if `year` or `newYear` do not have data files.
      */
     public void whatIsNameInYear (String name, int year, int newYear, String gender) {
         String newName = "NO NAME";
+        
+        // Only bother searching if name and gender are actually present.
+        if (hasValue(name) && hasValue(gender)) {
+        }
+        
         System.out.println(name + " born in " + year + " would be " + newName + 
-                            " if " + genderPronoun(gender) + " was born in " + newYear + ".");
+            " if " + genderPronoun(gender) + " was born in " + newYear + ".");
     }
-    
+
     public void testWhatIsNameInYear () {
         // Jennifer in 1994 is rank 21.
         // Jennifer in 1994 is Grace in 2014.  (Grace is rank 21 in 2014.)
         System.out.println("Expect:  Jennifer born in 1994 would be Grace if she was born in 2014.");
         whatIsNameInYear("Jennifer", 1994, 2014, FEMALE);
     }
-    
+
     /** Given a `name` in a `year` and a `gender`, look up that same name and gender in 
      *  `decade` and print `name` born in `year` would be `newName` if she/he was born in the `newYear`s.
      *  
@@ -223,34 +313,40 @@ public class BabyBirths {
      *  @param year     The year to search for `name` to get its rank
      *  @param newYear  The other year to search for that same rank
      *  @param gender   The gender to use in the search
+     *  @throws exception if `year` or `decade` do not have data files.
      */
     public void whatIsNameInDecade (String name, int year, int decade, String gender) {
         String newName = "NO NAME";
+
+        // Only bother searching if name and gender are actually present.
+        if (hasValue(name) && hasValue(gender)) {
+        }
+        
         System.out.println(name + " born in " + year + " would be " + newName + 
-                            " if " + genderPronoun(gender) + " was born in the " + decade + "s.");
+            " if " + genderPronoun(gender) + " was born in the " + decade + "s.");
     }
-    
+
     public void testWhatIsNameInDecade () {
-    System.out.println("Expected:  Jennifer born in 1994 would be Alexandra if she was born in the 2000s.");
-    whatIsNameInDecade("Jennifer", 1994, 2000, FEMALE);
-    System.out.println("1990 is Crystal");
-    whatIsNameInDecade("Jennifer", 1994, 1990, FEMALE);
-    System.out.println("1980 is Erica");
-    whatIsNameInDecade("Jennifer", 1994, 1980, FEMALE);
-    System.out.println("1970 is Barbara");
-    whatIsNameInDecade("Jennifer", 1994, 1970, FEMALE);
-    System.out.println("1920 is Edith");
-    whatIsNameInDecade("Jennifer", 1994, 1920, FEMALE);
-    System.out.println("1910 is Lucille");
-    whatIsNameInDecade("Jennifer", 1994, 1910, FEMALE);
-    System.out.println("1900 is Sarah");
-    whatIsNameInDecade("Jennifer", 1994, 1900, FEMALE);
-    System.out.println("1890 is Cora");
-    whatIsNameInDecade("Jennifer", 1994, 1890, FEMALE);
-    System.out.println("NO NAME");
-    whatIsNameInDecade("Jennifer", 1994, 2000, MALE);
+        System.out.println("Expected:  Jennifer born in 1994 would be Alexandra if she was born in the 2000s.");
+        whatIsNameInDecade("Jennifer", 1994, 2000, FEMALE);
+        System.out.println("1990 is Crystal");
+        whatIsNameInDecade("Jennifer", 1994, 1990, FEMALE);
+        System.out.println("1980 is Erica");
+        whatIsNameInDecade("Jennifer", 1994, 1980, FEMALE);
+        System.out.println("1970 is Barbara");
+        whatIsNameInDecade("Jennifer", 1994, 1970, FEMALE);
+        System.out.println("1920 is Edith");
+        whatIsNameInDecade("Jennifer", 1994, 1920, FEMALE);
+        System.out.println("1910 is Lucille");
+        whatIsNameInDecade("Jennifer", 1994, 1910, FEMALE);
+        System.out.println("1900 is Sarah");
+        whatIsNameInDecade("Jennifer", 1994, 1900, FEMALE);
+        System.out.println("1890 is Cora");
+        whatIsNameInDecade("Jennifer", 1994, 1890, FEMALE);
+        System.out.println("NO NAME");
+        whatIsNameInDecade("Jennifer", 1994, 2000, MALE);
     }
-    
+
     /** Given a set of data files selected by the user, determine when `name` and `gender`
      *  had the highest rank.
      *  
@@ -260,9 +356,14 @@ public class BabyBirths {
      *  isn't found, return -1.
      */
     public int yearOfHighestRank (String name, String gender) {
+        // Only bother searching if name and gender are actually present.
+        if (hasValue(name) && hasValue(gender)) {
+        }
+        
+        // name not found.
         return -1;
     }
-    
+
     /** Given a set of data files selected by the user, determine the average rank
      *  held by `name` and `gender`.
      *  
@@ -272,9 +373,14 @@ public class BabyBirths {
      *  If `name` isn't ranked in any of the files, return -1.0.
      */
     public double getAverageRank (String name, String gender) {
+        // Only bother computing if name and gender are actually present.
+        if (hasValue(name) && hasValue(gender)) {
+        }
+        
+        // name not found
         return -1.0;
     }
-    
+
     /** Given a `name` and `gender` in some `year`, determine how many babies were
      *  born with a higher ranked name (meaning lower rank number) than `name`.
      *  
@@ -282,10 +388,20 @@ public class BabyBirths {
      *  @param name     The baby name to search for
      *  @param gender   The gender to use in the search
      *  @return the total number of births, regardless of gender, that have names
-     *  more popular than `name`.
+     *  more popular than `name`.  If `name` not found, return -1.
+     *  @throws exception if `year` does not have a data file.
      */
     public int getTotalBirthsRankedHigher (int year, String name, String gender) {
+        // Only bother searching if name and gender are actually present.
+        if (hasValue(name) && hasValue(gender)) {
+        }
+        
+        // name not found
         return -1;
     }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    //// Quiz answer methods                                                      ////
+    //////////////////////////////////////////////////////////////////////////////////   
 
 }  // BabyBirths
