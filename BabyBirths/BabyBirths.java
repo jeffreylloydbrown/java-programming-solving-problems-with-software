@@ -148,6 +148,28 @@ public class BabyBirths {
         totalBirths(fr);
     }
     
+    /** Given a FileResource and a `gender`, create a StorageResource that
+     *  contain only rows matching `gender`.
+     *  
+     *  This filtering will make finding ranks easier, and separates the concern of
+     *  filtering from counting to the appropriate rank number.
+     *  
+     *  @param fr       The FileResource we are filtering.
+     *  @param gender   The gender we are filtering for.  We do not confirm the gender
+     *  is actually a supported gender, so future genders won't change this code.
+     *  @return a StorageResource that contains only records matching `gender`, in
+     *  the order they occur in `fr`.
+     */
+    public MyStorageResource filterByGender (FileResource fr, String gender) {
+        MyStorageResource sr = new MyStorageResource();
+        for (CSVRecord record : fr.getCSVParser(false)) {
+            if (isGender(record, gender)) {
+                sr.add(getBabyName(record)+","+getGender(record)+","+getCount(record));
+            }
+        }
+        return sr;
+    }
+    
     /** Given a `name`, a `gender` and a `year`, determine the rank of `name` in `year`.
      *  Rank starts at 1.  That is, the most popular name of each gender is rank 1.
      *  
