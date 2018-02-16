@@ -293,17 +293,25 @@ public class BabyBirths {
         
         // Only bother searching if name and gender are actually present.
         if (hasValue(name) && hasValue(gender)) {
+            int rank = getRank(year, name, gender);
+            newName = getName(newYear, rank, gender);
         }
         
         System.out.println(name + " born in " + year + " would be " + newName + 
             " if " + genderPronoun(gender) + " was born in " + newYear + ".");
     }
 
-    public void testWhatIsNameInYear () {
-        // Jennifer in 1994 is rank 21.
-        // Jennifer in 1994 is Grace in 2014.  (Grace is rank 21 in 2014.)
-        System.out.println("Expect:  Jennifer born in 1994 would be Grace if she was born in 2014.");
+    /** Test driver for whatIsNameInYear(). */
+    void testWhatIsNameInYear () {
+        // Jennifer in 1994 is rank 17.  (not 21 like said in the course video.)
+        // Jennifer in 1994 is Ella in 2014.  (Grace is rank 21 in 2014, but Ella is 17th.)
+        useRealData();
+        System.out.println("Expect:  Jennifer born in 1994 would be Ella if she was born in 2014.");
         whatIsNameInYear("Jennifer", 1994, 2014, FEMALE);
+        useTestData();
+        System.out.println("Expect:  Isabella born in 2012 would be Sophia if she was born in 2014.");
+        whatIsNameInYear("Isabella", 2012, 2014, FEMALE);
+        useRealData();
     }
 
     /** Given a `name` in a `year` and a `gender`, look up that same name and gender in 
