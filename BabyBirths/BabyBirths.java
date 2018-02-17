@@ -174,14 +174,20 @@ public class BabyBirths {
 
     // Control whether we use the simplified test data or the real data for a year.
     // The decade data doesn't have simplified data, so no need to do this for decade stuff.
-    // Unit tests should start by calling useTestData() and finish by calling useRealData().
-    private boolean testWithSimpleData = false;
-    private void useTestData() { testWithSimpleData = true; }
-
-    private void useRealData() { testWithSimpleData = false; }
+    // Unit tests should start by calling useTestData() and finish by calling useYearData().
+    private char useData = 'y';
+    private void useTestData() { useData = 't'; }
+    private void useDecadeData() { useData = 'd'; }
+    private void useYearData() { useData = 'y'; }
 
     private String getFilename(int year) {
-        return (testWithSimpleData) ? byTestFilename(year) : byYearFilename(year);
+        if (useData == 't') {
+            return byTestFilename(year);
+        } else if (useData == 'd') {
+            return byDecadeFilename(year);
+        } else {
+            return byYearFilename(year);
+        }
     }
     
     // Return true if a string is actually present:  not null and not empty.
@@ -229,7 +235,7 @@ public class BabyBirths {
         System.out.println("Expect -1 for female empty name, got "+getRank(2012, "", "F"));
         System.out.println("Expect -1 for male null, got "+getRank(2012, null, "M"));
         System.out.println("Expect -1 for unsupported gender, got "+getRank(2012, "Sophia", ""));
-        useRealData();
+        useYearData();
     }
 
     /** Given a `rank` in a `year` for a particular `gender`, look up and return the
@@ -276,7 +282,7 @@ public class BabyBirths {
         System.out.println("Expect NO NAME for #6 male, got "+getName(2012, 6, "M"));
         System.out.println("Expect NO NAME for -1 female, got "+getName(2012, -1, "F"));
         System.out.println("Expect NO NAME for -1 male, got "+getName(2012, -1, "M"));
-        useRealData();
+        useYearData();
     }
 
     /** Given a `name` in a `year` and a `gender`, look up that same name and gender in 
@@ -305,13 +311,13 @@ public class BabyBirths {
     void testWhatIsNameInYear () {
         // Jennifer in 1994 is rank 17.  (not 21 like said in the course video.)
         // Jennifer in 1994 is Ella in 2014.  (Grace is rank 21 in 2014, but Ella is 17th.)
-        useRealData();
+        useYearData();
         System.out.println("Expect:  Jennifer born in 1994 would be Ella if she was born in 2014.");
         whatIsNameInYear("Jennifer", 1994, 2014, FEMALE);
         useTestData();
         System.out.println("Expect:  Isabella born in 2012 would be Sophia if she was born in 2014.");
         whatIsNameInYear("Isabella", 2012, 2014, FEMALE);
-        useRealData();
+        useYearData();
     }
 
     /** Given a `name` in a `year` and a `gender`, look up that same name and gender in 
@@ -328,6 +334,11 @@ public class BabyBirths {
 
         // Only bother searching if name and gender are actually present.
         if (hasValue(name) && hasValue(gender)) {
+            useYearData();
+            int rank = getRank(year, name, gender);
+            useDecadeData();
+            newName = getName(decade, rank, gender);
+            useYearData();
         }
         
         System.out.println(name + " born in " + year + " would be " + newName + 
@@ -335,24 +346,25 @@ public class BabyBirths {
     }
 
     public void testWhatIsNameInDecade () {
-        System.out.println("Expected:  Jennifer born in 1994 would be Alexandra if she was born in the 2000s.");
+        System.out.println("Expected:  Jennifer born in 1994 would be Sandra if she was born in the 2000s.");
         whatIsNameInDecade("Jennifer", 1994, 2000, FEMALE);
-        System.out.println("1990 is Crystal");
+        System.out.println("1990 is Sandra");
         whatIsNameInDecade("Jennifer", 1994, 1990, FEMALE);
-        System.out.println("1980 is Erica");
+        System.out.println("1980 is Carol");
         whatIsNameInDecade("Jennifer", 1994, 1980, FEMALE);
-        System.out.println("1970 is Barbara");
+        System.out.println("1970 is Carol");
         whatIsNameInDecade("Jennifer", 1994, 1970, FEMALE);
-        System.out.println("1920 is Edith");
+        System.out.println("1920 is Rose");
         whatIsNameInDecade("Jennifer", 1994, 1920, FEMALE);
-        System.out.println("1910 is Lucille");
+        System.out.println("1910 is Grace");
         whatIsNameInDecade("Jennifer", 1994, 1910, FEMALE);
-        System.out.println("1900 is Sarah");
+        System.out.println("1900 is Grace");
         whatIsNameInDecade("Jennifer", 1994, 1900, FEMALE);
-        System.out.println("1890 is Cora");
+        System.out.println("1890 is Ruth");
         whatIsNameInDecade("Jennifer", 1994, 1890, FEMALE);
+        // The 1994 data file shows 44 boys named Jennifer, so must use another name.
         System.out.println("NO NAME");
-        whatIsNameInDecade("Jennifer", 1994, 2000, MALE);
+        whatIsNameInDecade("Supergirl", 1994, 2000, MALE);
     }
 
     /** Given a set of data files selected by the user, determine when `name` and `gender`
