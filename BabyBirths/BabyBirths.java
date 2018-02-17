@@ -483,17 +483,44 @@ public class BabyBirths {
      *  @param year     The year to search for `name` to get its rank
      *  @param name     The baby name to search for
      *  @param gender   The gender to use in the search
-     *  @return the total number of births, regardless of gender, that have names
+     *  @return the total number of births of the same gender that have names
      *  more popular than `name`.  If `name` not found, return -1.
      *  @throws exception if `year` does not have a data file.
      */
     public int getTotalBirthsRankedHigher (int year, String name, String gender) {
+        int total = -1;
+        
         // Only bother searching if name and gender are actually present.
         if (hasValue(name) && hasValue(gender)) {
+            // First we need to know what rank `name` has, and it must be valid.
+            int rank = getRank(year, name, gender);
+            if (rank != -1) {
+                // We know we have at least 1 entry so total cannot be -1.
+                // Reset it, then go sum the births up to but not including `rank`.
+                total = 0;
+                FileResource fr = new FileResource(getFilename(year));
+                CSVParser parser = filterByGender(fr, gender).getCSVParser(false);
+                for (CSVRecord rec : parser) {
+                    if (parser.getRecordNumber() >= rank) break;
+                    total = total + getCount(rec);
+                }
+            }
         }
 
-        // name not found
-        return -1;
+        return total;
+    }
+    
+    /** Test driver for getTotalBirthsRankedHigher(). */
+    void testGetTotalBirthsRankedHigher () {
+        useTestData();
+        System.out.println("Expect 15, got "+getTotalBirthsRankedHigher(2012, "Ethan", MALE));
+        System.out.println("Expect  0, got "+getTotalBirthsRankedHigher(2012, "Jacob", MALE));
+        System.out.println("Expect -1, got "+getTotalBirthsRankedHigher(2012, "Supergirl", FEMALE));
+        System.out.println("Expect -1, got "+getTotalBirthsRankedHigher(2012, "", MALE));
+        System.out.println("Expect -1, got "+getTotalBirthsRankedHigher(2012, null, MALE));
+        System.out.println("Expect -1, got "+getTotalBirthsRankedHigher(2012, "Ethan", ""));
+        System.out.println("Expect -1, got "+getTotalBirthsRankedHigher(2012, "Ethan", null));
+        useYearData();
     }
 
     //////////////////////////////////////////////////////////////////////////////////
