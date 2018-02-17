@@ -1,5 +1,6 @@
 import edu.duke.*;
 import org.apache.commons.csv.*;
+import java.io.File;
 
 /**
  * Given a large amount of data on babies born in the USA 1880-2014,
@@ -177,7 +178,9 @@ public class BabyBirths {
     // Unit tests should start by calling useTestData() and finish by calling useYearData().
     private char useData = 'y';
     private void useTestData() { useData = 't'; }
+
     private void useDecadeData() { useData = 'd'; }
+
     private void useYearData() { useData = 'y'; }
 
     private String getFilename(int year) {
@@ -189,7 +192,7 @@ public class BabyBirths {
             return byYearFilename(year);
         }
     }
-    
+
     // Return true if a string is actually present:  not null and not empty.
     private boolean hasValue (String s) { return s != null && ! s.isEmpty(); }
 
@@ -296,13 +299,13 @@ public class BabyBirths {
      */
     public void whatIsNameInYear (String name, int year, int newYear, String gender) {
         String newName = "NO NAME";
-        
+
         // Only bother searching if name and gender are actually present.
         if (hasValue(name) && hasValue(gender)) {
             int rank = getRank(year, name, gender);
             newName = getName(newYear, rank, gender);
         }
-        
+
         System.out.println(name + " born in " + year + " would be " + newName + 
             " if " + genderPronoun(gender) + " was born in " + newYear + ".");
     }
@@ -340,7 +343,7 @@ public class BabyBirths {
             newName = getName(decade, rank, gender);
             useYearData();
         }
-        
+
         System.out.println(name + " born in " + year + " would be " + newName + 
             " if " + genderPronoun(gender) + " was born in the " + decade + "s.");
     }
@@ -367,6 +370,20 @@ public class BabyBirths {
         whatIsNameInDecade("Supergirl", 1994, 2000, MALE);
     }
 
+    // Extract the year from the filename of a File.
+    // The year is the 4 characters after the right-most "yob" in the file name.
+    private int fileYear (File f) {
+        int year = -1;
+        String filename = f.getName().toLowerCase();
+        int yobPosition = filename.lastIndexOf("yob");
+        if (yobPosition >= 0 && yobPosition+7 < filename.length()) {
+            String yearStr = filename.substring(yobPosition+3, yobPosition+7);
+            year = Integer.parseInt(yearStr);
+        }
+
+        return year;
+    }
+
     /** Given a set of data files selected by the user, determine when `name` and `gender`
      *  had the highest rank.
      *  
@@ -376,12 +393,46 @@ public class BabyBirths {
      *  isn't found, return -1.
      */
     public int yearOfHighestRank (String name, String gender) {
+        int bestRank = -1;      // tracks the best rank seen so far.
+        int bestRankYear = -1;  // what year did bestRank happen in?
+
         // Only bother searching if name and gender are actually present.
         if (hasValue(name) && hasValue(gender)) {
+            DirectoryResource dr = new DirectoryResource();
+            for (File f : dr.selectedFiles()) {
+                int year = fileYear(f);
+                if (year != -1) {
+                    // Get the current rank and compare it to bestRank.  Remember that
+                    // on the first file bestRank won't be valid.  And we might have
+                    // an unranked name, so check for that as well.
+                    int currentRank = getRank(year, name, gender);
+                    if (currentRank != -1) {
+                        if (bestRank == -1) {
+                            bestRank = currentRank;
+                            bestRankYear = year;
+                        } else if (currentRank < bestRank) {  // remember, better means lower rank
+                            bestRank = currentRank;
+                            bestRankYear = year;
+                        }
+                    }
+                }
+            }
         }
-        
-        // name not found.
-        return -1;
+
+        return bestRankYear;
+    }
+
+    void testYearOfHighestRank () {
+        useTestData();
+        System.out.println("Expected year is 2012, got "+yearOfHighestRank("Mason", MALE));
+        System.out.println("Expected year is 2013, got "+yearOfHighestRank("Noah", MALE));
+        System.out.println("Expected year is -1, got "+yearOfHighestRank("Charlie", MALE));
+        System.out.println("Expected year is -1, got "+yearOfHighestRank("Charlie", FEMALE));
+        System.out.println("Expected year is -1, got "+yearOfHighestRank("", FEMALE));
+        System.out.println("Expected year is -1, got "+yearOfHighestRank(null, FEMALE));
+        System.out.println("Expected year is -1, got "+yearOfHighestRank("Mason", ""));
+        System.out.println("Expected year is -1, got "+yearOfHighestRank("Mason", null));
+        useYearData();
     }
 
     /** Given a set of data files selected by the user, determine the average rank
@@ -396,7 +447,7 @@ public class BabyBirths {
         // Only bother computing if name and gender are actually present.
         if (hasValue(name) && hasValue(gender)) {
         }
-        
+
         // name not found
         return -1.0;
     }
@@ -415,7 +466,7 @@ public class BabyBirths {
         // Only bother searching if name and gender are actually present.
         if (hasValue(name) && hasValue(gender)) {
         }
-        
+
         // name not found
         return -1;
     }
