@@ -92,32 +92,6 @@ public class BabyBirths {
     //// Primary implementation.                                                  ////
     //////////////////////////////////////////////////////////////////////////////////
 
-    /** Example code from course video that reads a data file and does nothing interesting.
-     * 
-     *  @param year     the year to read
-     */
-    public void readOneFile (int year) {
-        FileResource fr = new FileResource(byYearFilename(year));
-        for (CSVRecord rec : fr.getCSVParser(false)) {
-            String name = getBabyName(rec);
-            String gender = getGender(rec);
-            // TODO
-        }
-    }
-
-    /** Example code from course video that prints each row in the data file the user selects. */
-    public void printNames () {
-        FileResource fr = new FileResource();
-        for (CSVRecord rec : fr.getCSVParser(false)) {
-            int numBorn = getCount(rec);
-            if (numBorn <= 100) {
-                System.out.println("Name " + getBabyName(rec) + 
-                    " Gender " + getGender(rec) +
-                    " Num Born " + getCount(rec));
-            }
-        }
-    }
-
     /** Example code from course video that calculates the total births as well as the girl births
      *  and boy births and prints them.
      *  
@@ -139,7 +113,7 @@ public class BabyBirths {
     }
 
     /** Test driver for totalBirths(), from the course video. */
-    public void testTotalBirths () {
+    void testTotalBirths () {
         FileResource fr = new FileResource(EXAMPLE_FILENAME);
         System.out.println("Expect 1700 total births, 1500 females, 200 males");
         totalBirths(fr);
@@ -150,7 +124,7 @@ public class BabyBirths {
     }
 
     /** Given a FileResource and a `gender`, create a StorageResource that
-     *  contain only rows matching `gender`.
+     *  contains only rows matching `gender`.
      *  
      *  This filtering will make finding ranks easier, and separates the concern of
      *  filtering from counting to the appropriate rank number.
@@ -348,7 +322,8 @@ public class BabyBirths {
             " if " + genderPronoun(gender) + " was born in the " + decade + "s.");
     }
 
-    public void testWhatIsNameInDecade () {
+    /** Test driver for whatIsNameInDecade(). */
+    void testWhatIsNameInDecade () {
         System.out.println("Expected:  Jennifer born in 1994 would be Sandra if she was born in the 2000s.");
         whatIsNameInDecade("Jennifer", 1994, 2000, FEMALE);
         System.out.println("1990 is Sandra");
