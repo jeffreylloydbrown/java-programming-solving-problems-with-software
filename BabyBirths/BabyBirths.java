@@ -444,12 +444,37 @@ public class BabyBirths {
      *  If `name` isn't ranked in any of the files, return -1.0.
      */
     public double getAverageRank (String name, String gender) {
+        int totalRank = 0;
+        int ranks = 0;
+        
         // Only bother computing if name and gender are actually present.
         if (hasValue(name) && hasValue(gender)) {
+            DirectoryResource dr = new DirectoryResource();
+            for (File f : dr.selectedFiles()) {
+                int year = fileYear(f);
+                if (year != -1) {
+                    int currentRank = getRank(year, name, gender);
+                    if (currentRank != -1) {
+                        totalRank = totalRank + currentRank;
+                        ranks = ranks + 1;
+                    }
+                }
+            }
         }
 
-        // name not found
-        return -1.0;
+        return (ranks == 0) ? -1.0 : ((double) totalRank) / ranks;
+    }
+    
+    /** Test driver for getAverageRank(). */
+    void testGetAverageRank () {
+        useTestData();
+        System.out.println("Expect 3.0, got "+getAverageRank("Mason", MALE));
+        System.out.println("Expect 2.666..., got "+getAverageRank("Jacob", MALE));
+        System.out.println("Expect -1.0, got "+getAverageRank("", MALE));
+        System.out.println("Expect -1.0, got "+getAverageRank(null, MALE));
+        System.out.println("Expect -1.0, got "+getAverageRank("Mason", ""));
+        System.out.println("Expect -1.0, got "+getAverageRank("Mason", null));
+        useYearData();
     }
 
     /** Given a `name` and `gender` in some `year`, determine how many babies were
