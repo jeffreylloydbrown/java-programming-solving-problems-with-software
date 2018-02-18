@@ -294,6 +294,10 @@ public class BabyBirths {
         useTestData();
         System.out.println("Expect:  Isabella born in 2012 would be Sophia if she was born in 2014.");
         whatIsNameInYear("Isabella", 2012, 2014, FEMALE);
+        System.out.println("Expect:  Mason born in 2012 would be Liam if he was born in 2014.");
+        whatIsNameInYear("Mason", 2012, 2014, MALE);
+        System.out.println("Expect:  Mason born in 2012 would be NO NAME if don't recognize gender 'q' was born in 2014.");
+        whatIsNameInYear("Mason", 2012, 2014, "q");
         useYearData();
     }
 
@@ -302,7 +306,7 @@ public class BabyBirths {
      *  
      *  @param name     The baby name to find in `year`
      *  @param year     The year to search for `name` to get its rank
-     *  @param newYear  The other year to search for that same rank
+     *  @param decade  The other year to search for that same rank
      *  @param gender   The gender to use in the search
      *  @throws exception if `year` or `decade` do not have data files.
      */
@@ -342,7 +346,7 @@ public class BabyBirths {
         whatIsNameInDecade("Jennifer", 1994, 1890, FEMALE);
         // The 1994 data file shows 44 boys named Jennifer, so must use another name.
         System.out.println("NO NAME");
-        whatIsNameInDecade("Supergirl", 1994, 2000, MALE);
+        whatIsNameInDecade("Supergirl", 1994, 2000, FEMALE);
     }
 
     // Extract the year from the filename of a File.
