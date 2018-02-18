@@ -505,5 +505,27 @@ public class BabyBirths {
     //////////////////////////////////////////////////////////////////////////////////
     //// Quiz answer methods                                                      ////
     //////////////////////////////////////////////////////////////////////////////////   
+    
+    /** Output/results used to answer quiz questions. */
+    void quiz () {
+        System.out.println("question 1 number of girls names in 1900");
+        totalBirths(new FileResource(byYearFilename(1900)));
+        System.out.println("question 2 number of boys names in 1905");
+        totalBirths(new FileResource(byYearFilename(1905)));
+        System.out.println("question 3 Emily rank 1960: "+getRank(1960, "Emily", FEMALE));
+        System.out.println("question 4 Frank rank 1971: "+getRank(1971, "Frank", MALE));
+        System.out.println("question 5 #350 girls name 1980: "+getName(1980, 350, FEMALE));
+        System.out.println("question 6 #450 boys name 1982: "+getName(1982, 450, MALE));
+        System.out.println("question 7 Susan from 1972 is who in 2014");
+        whatIsNameInYear("Susan", 1972, 2014, FEMALE);
+        System.out.println("question 8 Owen from 1974 is who in 2014");
+        whatIsNameInYear("Owen", 1974, 2014, MALE);
+        System.out.println("question 9 highest rank for Genevieve 1880-2014: "+yearOfHighestRank("Genevieve", FEMALE));
+        System.out.println("question 10 highest rank for Mich 1880-2014: "+yearOfHighestRank("Mich", MALE));
+        System.out.println("question 11 avg rank Susan 1880-2014: "+getAverageRank("Susan", FEMALE));
+        System.out.println("question 12 avg rank Robert 1880-2014: "+getAverageRank("Robert", MALE));
+        System.out.println("question 13 total births above Emily 1990: "+getTotalBirthsRankedHigher(1990, "Emily", FEMALE));
+        System.out.println("question 14 total births above Drew 1990: "+getTotalBirthsRankedHigher(1990, "Drew", MALE));
+    }
 
 }  // BabyBirths
