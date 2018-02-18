@@ -2,3 +2,5 @@
 *.ctxt
 *.class
 StorageResourceMod/*
+BabyBirths/MyStorageResource.java
+BabyBirths/TestMyStorageResource.java
