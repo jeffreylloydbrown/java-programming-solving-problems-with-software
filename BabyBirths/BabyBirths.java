@@ -137,8 +137,8 @@ public class BabyBirths {
      *  @throws exception if `fr` isn't valid.
      *  @throws exception if `fr` does not represent CSV data.
      */
-    public MyStorageResource filterByGender (FileResource fr, String gender) {
-        MyStorageResource sr = new MyStorageResource();
+    public StorageResource filterByGender (FileResource fr, String gender) {
+        StorageResource sr = new StorageResource();
         for (CSVRecord record : fr.getCSVParser(false)) {
             if (isGender(record, gender)) {
                 sr.add(getBabyName(record)+","+getGender(record)+","+getCount(record));

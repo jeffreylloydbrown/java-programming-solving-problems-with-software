@@ -1,6 +1,6 @@
 //package edu.duke;
-
 import edu.duke.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,20 +41,20 @@ import java.io.*;
  * 
  * @author Duke Software Team
  */
-public class MyStorageResource {
+public class StorageResource {
     private List<String> myStrings;
 
     /**
      * Create an empty <code>StorageResource</code> object
      */
-    public MyStorageResource () {
+    public StorageResource () {
         myStrings = new ArrayList<String>();
     }
 
     /**
      * Create a <code>StorageResource</code> object, loaded with the Strings passed as parameters.
      */
-    MyStorageResource (String... data) {
+    StorageResource (String... data) {
         myStrings = new ArrayList<String>(Arrays.asList(data));
     }
 
@@ -63,7 +63,7 @@ public class MyStorageResource {
      * 
      * @param other the original list being copied
      */
-    public MyStorageResource (MyStorageResource other) {
+    public StorageResource (StorageResource other) {
         myStrings = new ArrayList<String>(other.myStrings);
     }
 
