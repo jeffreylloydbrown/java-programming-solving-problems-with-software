@@ -101,15 +101,25 @@ public class BabyBirths {
         int totalBirths = 0;
         int totalBoys = 0;
         int totalGirls = 0;
+        int countBoys = 0;      // counts unique names (that is, +1 per record)
+        int countGirls = 0;     // counts unique names (that is, +1 per record)
+        int countAll = 0;
         for (CSVRecord rec : fr.getCSVParser(false)) {
             int numBorn = getCount(rec);
             totalBirths += numBorn;
-            if (isMale(rec)) totalBoys += numBorn;
-            if (isFemale(rec)) totalGirls += numBorn;
+            countAll += 1;
+            if (isMale(rec)) {
+                totalBoys += numBorn;
+                countBoys += 1;
+            }
+            if (isFemale(rec)) {
+                totalGirls += numBorn;
+                countGirls += 1;
+            }
         }
-        System.out.println("total births = " + totalBirths);
-        System.out.println("total girls = " + totalGirls);
-        System.out.println("total boys = " + totalBoys);
+        System.out.println(countAll + " names for total births = " + totalBirths);
+        System.out.println(countGirls + " names for total girls = " + totalGirls);
+        System.out.println(countBoys + " names for total boys = " + totalBoys);
     }
 
     /** Test driver for totalBirths(), from the course video. */
@@ -508,9 +518,9 @@ public class BabyBirths {
     
     /** Output/results used to answer quiz questions. */
     void quiz () {
-        System.out.println("question 1 number of girls names in 1900");
+        System.out.println("question 1 number of girls NAMES, not births!, in 1900");
         totalBirths(new FileResource(byYearFilename(1900)));
-        System.out.println("question 2 number of boys names in 1905");
+        System.out.println("question 2 number of boys NAMES, not births!, in 1905");
         totalBirths(new FileResource(byYearFilename(1905)));
         System.out.println("question 3 Emily rank 1960: "+getRank(1960, "Emily", FEMALE));
         System.out.println("question 4 Frank rank 1971: "+getRank(1971, "Frank", MALE));
