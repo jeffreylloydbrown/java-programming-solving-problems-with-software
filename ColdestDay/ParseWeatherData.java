@@ -302,7 +302,39 @@ public class ParseWeatherData {
         }
     }
     
+    public void practiceQuiz () {
+        System.out.println("==== BE SURE TO DOUBLE-CHECK THE QUESTIONS VS. THE FILES USED HERE!!!! May need to update the code ====\n");
+        
+        FileResource fr = new FileResource("nc_weather/2014/weather-2014-05-01.csv");
+        CSVRecord coldest = coldestHourInFile(fr.getCSVParser());
+        System.out.println("coldest temperature on 5/1/14 is " + getNumber(coldest, TEMPERATURE_COLUMN));
+        
+        String filename = fileWithColdestTemperature();  // manually select all files in the target year. Use ctrl-A after picking 1 file.
+        System.out.println("file with coldest 2014 temperature = " + filename);
+        fr = new FileResource("nc_weather/2014/"+filename);
+        coldest = coldestHourInFile(fr.getCSVParser());
+        System.out.println("coldest temperature that day is " + getNumber(coldest, TEMPERATURE_COLUMN));
+        
+        fr = new FileResource("nc_weather/2014/weather-2014-04-01.csv");
+        CSVRecord humidity = lowestHumidityInFile(fr.getCSVParser());
+        System.out.println("time of day on 4/1/2014 with the lowest humidity is " + humidity.get(DATE_COLUMN));
+        
+        humidity = lowestHumidityInManyFiles();  // manually select all files in the target year.
+        System.out.println("lowest humidity in 2014 was " + getNumber(humidity, HUMIDITY_COLUMN) +
+            " at " + humidity.get(DATE_COLUMN));
+            
+        fr = new FileResource("nc_weather/2014/weather-2014-06-01.csv");
+        double averageTemp = averageTemperatureInFile(fr.getCSVParser());
+        System.out.println("average temp on 6/1/2014 was " + averageTemp);
+        
+        fr = new FileResource("nc_weather/2014/weather-2014-03-30.csv");
+        averageTemp = averageTemperatureWithHighHumidityInFile(fr.getCSVParser(), 80);
+        System.out.println("average temp over 80% humidity on 3/30/2014 is " + averageTemp);
+    }
+    
     public void finalQuiz () {
+        System.out.println("==== BE SURE TO DOUBLE-CHECK THE QUESTIONS VS. THE FILES USED HERE!!!! May need to update the code ====\n");
+        
         FileResource fr = new FileResource("nc_weather/2014/weather-2014-06-29.csv");
         CSVRecord lowestHumidity = lowestHumidityInFile(fr.getCSVParser());
         System.out.println("lowest humidity on 6/29/14 was " + getNumber(lowestHumidity, HUMIDITY_COLUMN));
