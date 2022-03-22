@@ -14,6 +14,7 @@ public class ParseWeatherData {
     private String TIME_COLUMN = "TimeEST";
     private String HUMIDITY_COLUMN = "Humidity";
     private String DATE_COLUMN = "DateUTC";
+    private double VALUE_MISSING_FLAG = -9999.0;
     
     /** Convert the data found in column `column` of `record` into a numeric value.
      * 
@@ -49,7 +50,7 @@ public class ParseWeatherData {
         CSVRecord minimumSoFar = null;
         for (CSVRecord currentRow : parser) {
             double currentValue = getNumber(currentRow, column);
-            if (currentValue != Double.NaN) {
+            if (currentValue != Double.NaN && currentValue != VALUE_MISSING_FLAG) {
                 if (minimumSoFar == null) {
                     minimumSoFar = currentRow;
                 } else {
