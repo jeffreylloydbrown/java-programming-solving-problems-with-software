@@ -1,7 +1,0 @@
-1.  the dr that is highlighted should be dir.
-2.  modify selectAndConvert
-3.  final choice, but confirm it before submit
-4.  (155, 225, 5)
-5.  pxInvert.setRed(255-pxOriginal.getRed());
-6.  inv-dragon.png
-

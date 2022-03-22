@@ -1,9 +1,0 @@
-DON'T ROUND!!!  CAREFULLY READ EACH QUESTION, AS THEY CHANGE FILES!!
-
-1.  datatest1.txt: 30.64   datatest4.txt: 59.45
-2.  datatest1.txt: 7.66    datatest4.txt: 5.94
-3.  datatest1.txt: 9.21    datatest4.txt: 8.48
-4.  datatest5.txt: 62.65   example3.txt: 28.84
-5.  largest perimeter: example3.txt or datatest5.txt, depending on which asked
-6.  2nd choice (count = count + count) always zero.
-7.  the function changes, so you have to read and interpret it.

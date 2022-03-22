@@ -1,8 +1,0 @@
-1.  Turkeys, Ducks and Quails
-2.  The method mystery is given a string and it returns a string which is the same string but with the first three T's removed.
-3.  69
-4.  23
-5.  40
-6.  224
-7.  489
-
