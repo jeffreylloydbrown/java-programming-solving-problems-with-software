@@ -155,6 +155,8 @@ public class ParseExportData {
         
         System.out.println("gold exporters = " + numberOfExporters(fr.getCSVParser(), "gold"));
         
+        System.out.println("number of sugar exporters = " + numberOfExporters(fr.getCSVParser(), "sugar"));        
+        
         System.out.println("Nauru exports");
         System.out.println(countryInfo(fr.getCSVParser(), "Nauru"));
         
