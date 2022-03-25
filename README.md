@@ -6,3 +6,5 @@ I use IntelliJ at work, and thought long and hard about using IntelliJ for this 
 - the instructors cover some BlueJ-specific things in the class and include questions about it in the quizes. 
 - BlueJ is a reasonably good IDE with a small memory footprint, which means it runs in memory-restricted Raspberry Pi devices.  IntelliJ struggles to run in 2GB on a Pi 3 and runs fairly ok, but not perfectly, on a 4GB Pi 4.
 - it doesn't hurt to get experience with multiple development environments.  While I doubt I will ever see BlueJ at a job, it is still good to compare and contrast it with a full-blown IDE such as IntelliJ or Eclipse.
+
+[My Coursera certificate](https://coursera.org/share/a0ed7d94a19487a387d0c433ecba612a)
